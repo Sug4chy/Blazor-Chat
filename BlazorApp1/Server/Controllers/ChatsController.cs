@@ -1,5 +1,7 @@
 ﻿using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
+using BlazorApp1.Shared.Requests;
+using BlazorApp1.Shared.Responses;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,7 @@ namespace BlazorApp1.Server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ChatController : ControllerBase
+public class ChatsController : ControllerBase
 {
     private readonly UserService _userService;
     private readonly UserMapper _userMapper;
@@ -17,7 +19,7 @@ public class ChatController : ControllerBase
     private readonly MessageService _messageService;
     private readonly MessageMapper _messageMapper;
 
-    public ChatController(
+    public ChatsController(
         UserService userService, 
         UserMapper userMapper, 
         ChatroomMapper chatroomMapper, 
@@ -32,49 +34,16 @@ public class ChatController : ControllerBase
         _messageService = messageService;
         _messageMapper = messageMapper;
     }
-
-    [HttpPost("/createUser")]
-    public async Task<IActionResult> CreateUser(string name)
+    
+    [HttpPost]
+    public async Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request)
     {
-        var entity = await _userService.CreateUser(name);
-        var model = _userMapper.Map(entity);
-        return Ok(model);
-    }
-
-    [HttpPost("/createChat")]
-    public async Task<IActionResult> CreateChat(string name)
-    {
-        var entity = await _chatService.CreateChat(name);
+        var entity = await _chatService.CreateChat(request.Name);
         var model = _chatroomMapper.Map(entity);
-        return Ok(model);
+        return new CreateChatResponse { Chat = model };
     }
-
-    [HttpGet("/users")]
-    public async Task<IActionResult> GetAllUsers()
-    {
-        var entities = await _userService.GetAllUsers();
-        var models = entities.Select(_userMapper.Map)
-            .Select(user => user.Name)
-            .ToList();
-        return Ok(models);
-    }
-
-    [HttpGet("/userChats")]
-    public async Task<IActionResult> GetUserChats(int userId)
-    {
-        var user = await _userService.GetUser(userId);
-        if (user is null)
-        {
-            return BadRequest($"Пользователя с id {userId} не существует");
-        }
-
-        var chats = user.Chatrooms.Select(_chatroomMapper.Map)
-            .Select(chat => chat.Name)
-            .ToList();
-        return Ok(chats);
-    }
-
-    [HttpGet("/chat")]
+    
+    [HttpGet("{chatId:int}")]
     public async Task<IActionResult> GetChat(int chatId)
     {
         var chat = await _chatService.GetChat(chatId);
@@ -87,7 +56,7 @@ public class ChatController : ControllerBase
         return Ok(chatModel);
     }
 
-    [HttpPut("/addUserInChat")]
+    [HttpPut("{chatId:int}/users")]
     public async Task<IActionResult> AddUserInChat(int userId, int chatId)
     {
         var user = await _userService.GetUser(userId);
@@ -114,7 +83,7 @@ public class ChatController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("/sendMessage")]
+    [HttpPost("{chatId:int}/messages")]
     public async Task<IActionResult> SendMessage(int userId, int chatId, string text)
     {
         var user = await _userService.GetUser(userId);

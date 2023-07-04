@@ -1,0 +1,24 @@
+﻿@page "/Chats"
+@using BlazorApp1.Shared.Requests
+@inject HttpClient HttpClient
+<h2>Create new chat</h2>
+<div>
+    <p>
+        Name: <br />
+        <InputText @bind-Value="_chatName"/>
+    </p>
+    <button @onclick="CreateChat"> Create </button>
+</div>
+
+@code {
+    private string? _chatName;
+
+    private async Task CreateChat()
+    {
+        if (_chatName is not null)
+        {
+            await HttpClient.PostAsJsonAsync("/Chats", new CreateChatRequest { Name = _chatName });
+            _chatName = null;
+        }
+    }
+}

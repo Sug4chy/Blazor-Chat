@@ -31,9 +31,9 @@ public class UserService
 
     public async Task<User?> GetUser(int id)
     {
-        var user = _db.Users
+        var user = await _db.Users
             .Include(u => u.Chatrooms)
-            .First(u => u.Id == id);
+            .FirstAsync(u => u.Id == id);
         return user;
     }
 }

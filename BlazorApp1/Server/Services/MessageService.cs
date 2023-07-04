@@ -25,6 +25,7 @@ public class MessageService
         };
         
         chat.Messages.Add(message);
+        sender.Messages.Add(message);
         
         await _db.Messages.AddAsync(message);
         await _db.SaveChangesAsync();
