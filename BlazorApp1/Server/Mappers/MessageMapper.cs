@@ -9,6 +9,7 @@ public class MessageMapper
     {
         Id = message.Id,
         SenderId = message.SenderId,
-        Text = message.Text
+        Text = message.Text,
+        ChatId = message.ChatId
     };
 }

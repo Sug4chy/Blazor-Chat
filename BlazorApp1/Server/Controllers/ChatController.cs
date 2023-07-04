@@ -2,6 +2,7 @@
 using BlazorApp1.Server.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Server.Controllers;
 
@@ -32,7 +33,7 @@ public class ChatController : ControllerBase
         _messageMapper = messageMapper;
     }
 
-    [HttpPost]
+    [HttpPost("/createUser")]
     public async Task<IActionResult> CreateUser(string name)
     {
         var entity = await _userService.CreateUser(name);
@@ -40,7 +41,7 @@ public class ChatController : ControllerBase
         return Ok(model);
     }
 
-    [HttpPost]
+    [HttpPost("/createChat")]
     public async Task<IActionResult> CreateChat(string name)
     {
         var entity = await _chatService.CreateChat(name);
@@ -48,7 +49,7 @@ public class ChatController : ControllerBase
         return Ok(model);
     }
 
-    [HttpGet]
+    [HttpGet("/users")]
     public async Task<IActionResult> GetAllUsers()
     {
         var entities = await _userService.GetAllUsers();
@@ -58,8 +59,8 @@ public class ChatController : ControllerBase
         return Ok(models);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetUsersChats(int userId)
+    [HttpGet("/userChats")]
+    public async Task<IActionResult> GetUserChats(int userId)
     {
         var user = await _userService.GetUser(userId);
         if (user is null)
@@ -73,7 +74,7 @@ public class ChatController : ControllerBase
         return Ok(chats);
     }
 
-    [HttpGet]
+    [HttpGet("/chat")]
     public async Task<IActionResult> GetChat(int chatId)
     {
         var chat = await _chatService.GetChat(chatId);
@@ -86,7 +87,34 @@ public class ChatController : ControllerBase
         return Ok(chatModel);
     }
 
-    [HttpPost]
+    [HttpPut("/addUserInChat")]
+    public async Task<IActionResult> AddUserInChat(int userId, int chatId)
+    {
+        var user = await _userService.GetUser(userId);
+        if (user is null)
+        {
+            return BadRequest($"Пользователя с id {userId} не существует");
+        }
+
+        var chat = await _chatService.GetChat(chatId);
+        if (chat is null)
+        {
+            return BadRequest($"Пользователя с id {chatId} не существует");
+        }
+
+        try
+        {
+            await _chatService.AddUserInChat(user, chat);
+        }
+        catch(DbUpdateException)
+        {
+            return Ok($"Пользователь {userId} уже есть в чате {chatId}");
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("/sendMessage")]
     public async Task<IActionResult> SendMessage(int userId, int chatId, string text)
     {
         var user = await _userService.GetUser(userId);

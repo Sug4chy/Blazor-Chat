@@ -9,6 +9,7 @@ public class MessageEntityConfiguration : IEntityTypeConfiguration<Message>
     public void Configure(EntityTypeBuilder<Message> builder)
     {
         builder.HasKey(message => message.Id);
+        
         builder.HasOne(message => message.Chat)
             .WithMany(chatroom => chatroom.Messages);
 

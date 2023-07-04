@@ -25,7 +25,16 @@ public class ChatService
 
     public async Task<Chatroom?> GetChat(int chatId)
     {
-        var chat = await  _db.Chatrooms.FindAsync(chatId);
+        var chat = await _db.Chatrooms.FindAsync(chatId);
         return chat;
+    }
+
+    public async Task AddUserInChat(User user, Chatroom chat)
+    {
+        chat.Users.Add(user);
+        _db.Update(user);
+        user.Chatrooms.Add(chat);
+        _db.Update(chat);
+        await _db.SaveChangesAsync();
     }
 }

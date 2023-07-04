@@ -1,9 +1,10 @@
 using BlazorApp1.Server.Data;
+using BlazorApp1.Server.Mappers;
+using BlazorApp1.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
     options.UseSqlite("Data source=app.db");
@@ -13,11 +14,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<MessageService>();
+
+builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<ChatroomMapper>();
+builder.Services.AddScoped<MessageMapper>();
+
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
 await scope.ServiceProvider.GetRequiredService<ApplicationContext>().Database.MigrateAsync();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();

@@ -24,14 +24,16 @@ public class UserService
         return user;
     }
 
-    public async Task<IEnumerable<User>> GetAllUsers()
+    public async Task<IReadOnlyCollection<User>> GetAllUsers()
     {
-        return await _db.Users.ToListAsync();
+        return await _db.Users.ToArrayAsync();
     }
 
     public async Task<User?> GetUser(int id)
     {
-        var user = await _db.Users.FindAsync(id);
+        var user = _db.Users
+            .Include(u => u.Chatrooms)
+            .First(u => u.Id == id);
         return user;
     }
 }
