@@ -2,7 +2,6 @@
 using BlazorApp1.Server.Services;
 using BlazorApp1.Shared.Requests;
 using BlazorApp1.Shared.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,22 +12,19 @@ namespace BlazorApp1.Server.Controllers;
 public class ChatsController : ControllerBase
 {
     private readonly UserService _userService;
-    private readonly UserMapper _userMapper;
     private readonly ChatService _chatService;
     private readonly ChatroomMapper _chatroomMapper;
     private readonly MessageService _messageService;
     private readonly MessageMapper _messageMapper;
 
     public ChatsController(
-        UserService userService, 
-        UserMapper userMapper, 
+        UserService userService,
         ChatroomMapper chatroomMapper, 
         ChatService chatService, 
         MessageService messageService, 
         MessageMapper messageMapper)
     {
         _userService = userService;
-        _userMapper = userMapper;
         _chatroomMapper = chatroomMapper;
         _chatService = chatService;
         _messageService = messageService;
@@ -44,31 +40,31 @@ public class ChatsController : ControllerBase
     }
     
     [HttpGet("{chatId:int}")]
-    public async Task<IActionResult> GetChat(int chatId)
+    public async Task<GetChatResponse> GetChat([FromRoute, FromBody] GetChatRequest request)
     {
-        var chat = await _chatService.GetChat(chatId);
+        var chat = await _chatService.GetChat(request.ChatId);
         if (chat is null)
         {
-            return BadRequest($"Чата с id {chatId} не существует");
+            throw new ArgumentException($"Чата с id {request.ChatId} не существует");
         }
 
         var chatModel = _chatroomMapper.Map(chat);
-        return Ok(chatModel);
+        return new GetChatResponse { Chat = chatModel };
     }
 
     [HttpPut("{chatId:int}/users")]
-    public async Task<IActionResult> AddUserInChat(int userId, int chatId)
+    public async Task<AddUserInChatResponse> AddUserInChat([FromBody] AddUserInChatRequest request)
     {
-        var user = await _userService.GetUser(userId);
+        var user = await _userService.GetUser(request.UserId);
         if (user is null)
         {
-            return BadRequest($"Пользователя с id {userId} не существует");
+            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
 
-        var chat = await _chatService.GetChat(chatId);
+        var chat = await _chatService.GetChat(request.ChatId);
         if (chat is null)
         {
-            return BadRequest($"Пользователя с id {chatId} не существует");
+            throw new ArgumentException($"Пользователя с id {request.ChatId} не существует");
         }
 
         try
@@ -77,29 +73,29 @@ public class ChatsController : ControllerBase
         }
         catch(DbUpdateException)
         {
-            return Ok($"Пользователь {userId} уже есть в чате {chatId}");
+            //Ignore
         }
 
-        return Ok();
+        return new AddUserInChatResponse { UpdatedChat = _chatroomMapper.Map(chat) };
     }
 
     [HttpPost("{chatId:int}/messages")]
-    public async Task<IActionResult> SendMessage(int userId, int chatId, string text)
+    public async Task<SendMessageResponse> SendMessage([FromBody] SendMessageRequest request)
     {
-        var user = await _userService.GetUser(userId);
+        var user = await _userService.GetUser(request.UserId);
         if (user is null)
         {
-            return BadRequest($"Пользователя с id {userId} не существует");
+            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
 
-        var chat = user.Chatrooms.FirstOrDefault(chat => chat.Id == chatId);
+        var chat = user.Chatrooms.FirstOrDefault(chat => chat.Id == request.ChatId);
         if (chat is null)
         {
-            return BadRequest($"Пользователь {user.Name} не состоит в чате {chatId}");
+            throw new ArgumentException($"Пользователь {user.Name} не состоит в чате {request.ChatId}");
         }
 
-        var message = await _messageService.CreateMessage(text, user, chat);
+        var message = await _messageService.CreateMessage(request.Text, user, chat);
         var messageModel = _messageMapper.Map(message);
-        return Ok(messageModel);
+        return new SendMessageResponse { Message = messageModel };
     }
 }

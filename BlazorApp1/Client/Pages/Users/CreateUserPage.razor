@@ -1,0 +1,23 @@
+﻿@page "/Users"
+@using BlazorApp1.Shared.Requests
+@inject HttpClient HttpClient
+<h2>Create new user</h2>
+<div>
+    <p>
+        Name: <br/>
+        <InputText @bind-Value="_userName"/>
+    </p>
+        <button @onclick="CreateUser"> Create </button>
+</div>
+@code {
+    private string? _userName;
+
+    private async Task CreateUser()
+    {
+        if (_userName is not null)
+        {
+            await HttpClient.PostAsJsonAsync("/Users", new CreateUserRequest { Name = _userName });
+            _userName = null;
+        }
+    }
+}

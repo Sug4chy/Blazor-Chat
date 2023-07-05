@@ -1,5 +1,9 @@
 ﻿using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
+using BlazorApp1.Shared.Requests;
+using BlazorApp1.Shared.Requests.Users;
+using BlazorApp1.Shared.Responses;
+using BlazorApp1.Shared.Responses.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Server.Controllers;
@@ -23,36 +27,35 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser(string name)
+    public async Task<CreateUserResponse> CreateUser([FromBody] CreateUserRequest request)
     {
-        var entity = await _userService.CreateUser(name);
+        var entity = await _userService.CreateUser(request.Name);
         var model = _userMapper.Map(entity);
-        return Ok(model);
+        return new CreateUserResponse { User = model };
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request)
     {
         var entities = await _userService.GetAllUsers();
         var models = entities.Select(_userMapper.Map)
-            .Select(user => user.Name)
-            .ToList();
-        return Ok(models);
+            .ToArray();
+        return new GetAllUsersResponse { AllUsers = models };
     }
 
     [HttpGet("{userId:int}")]
-    public async Task<IActionResult> GetUserChats(int userId)
+    public async Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request)
     {
-        var user = await _userService.GetUser(userId);
+        var user = await _userService.GetUser(request.UserId);
         if (user is null)
         {
-            return BadRequest($"Пользователя с id {userId} не существует");
+            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
 
         var chats = user.Chatrooms
-            .Select(chat => chat.Name)
+            .Select(_chatroomMapper.Map)
             .ToArray();
-        return Ok(chats);
+        return new GetUserChatsResponse { Chats = chats };
     }
 
 }
