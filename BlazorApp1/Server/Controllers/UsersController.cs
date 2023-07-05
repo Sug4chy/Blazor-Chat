@@ -12,16 +12,16 @@ public class UsersController : ControllerBase
 {
     private readonly UserService _userService;
     private readonly UserMapper _userMapper;
-    private readonly ChatroomMapper _chatroomMapper;
+    private readonly ChatMapper _chatMapper;
 
     public UsersController(
         UserService userService, 
         UserMapper userMapper, 
-        ChatroomMapper chatroomMapper)
+        ChatMapper chatMapper)
     {
         _userService = userService;
         _userMapper = userMapper;
-        _chatroomMapper = chatroomMapper;
+        _chatMapper = chatMapper;
     }
 
     [HttpPost]
@@ -51,7 +51,7 @@ public class UsersController : ControllerBase
         }
 
         var chats = user.Chatrooms
-            .Select(_chatroomMapper.Map)
+            .Select(_chatMapper.Map)
             .ToArray();
         return new GetUserChatsResponse { UserName = user.Name, Chats = chats };
     }

@@ -1,7 +1,4 @@
 ﻿@page "/Chats/{ChatId:int}"
-@using BlazorApp1.Shared.Models
-@using BlazorApp1.Shared.Requests.Chats
-@using BlazorApp1.Shared.Responses.Chats
 @inject HttpClient HttpClient
 @if (_chat is null)
 {
@@ -29,7 +26,7 @@ else
 }
 
 @code {
-    private ChatroomModel? _chat;
+    private ChatModel? _chat;
     private string? _userId;
     private string? _text;
         

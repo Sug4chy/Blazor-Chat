@@ -19,7 +19,7 @@ builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddScoped<UserMapper>();
-builder.Services.AddScoped<ChatroomMapper>();
+builder.Services.AddScoped<ChatMapper>();
 builder.Services.AddScoped<MessageMapper>();
 
 var app = builder.Build();

@@ -1,6 +1,4 @@
 ﻿@page "/Users/{UserId:int}"
-@using BlazorApp1.Shared.Responses.Users
-@using BlazorApp1.Shared.Models
 @inject HttpClient HttpClient
 
 <h2>@_userName</h2>
@@ -26,7 +24,7 @@
 
 @code {
     private string? _userName;
-    private ChatroomModel[] _chats = Array.Empty<ChatroomModel>();
+    private ChatModel[] _chats = Array.Empty<ChatModel>();
     
     [Parameter]
     public int UserId { get; set; }

@@ -12,7 +12,7 @@ public class MessageService
         _db = db;
     }
 
-    public async Task<Message> CreateMessage(string text, User sender, Chatroom chat)
+    public async Task<Message> CreateMessage(string text, User sender, Chat chat)
     {
         var message = new Message
         {

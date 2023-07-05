@@ -13,9 +13,9 @@ public class ChatService
         _db = db;
     }
 
-    public async Task<Chatroom> CreateChat(string name)
+    public async Task<Chat> CreateChat(string name)
     {
-        var chat = new Chatroom
+        var chat = new Chat
         {
             Name = name
         };
@@ -24,7 +24,7 @@ public class ChatService
         return chat;
     }
 
-    public async Task<Chatroom?> GetChat(int chatId)
+    public async Task<Chat?> GetChat(int chatId)
     {
         var chat = await _db.Chatrooms
             .Include(chat => chat.Messages)
@@ -33,7 +33,7 @@ public class ChatService
         return chat;
     }
 
-    public async Task AddUserInChat(User user, Chatroom chat)
+    public async Task AddUserInChat(User user, Chat chat)
     {
         chat.Users.Add(user);
         _db.Update(user);

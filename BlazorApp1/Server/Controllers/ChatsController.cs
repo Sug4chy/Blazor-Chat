@@ -1,8 +1,6 @@
 ﻿using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
-using BlazorApp1.Shared.Requests;
 using BlazorApp1.Shared.Requests.Chats;
-using BlazorApp1.Shared.Responses;
 using BlazorApp1.Shared.Responses.Chats;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,20 +14,20 @@ public class ChatsController : ControllerBase
     private readonly UserService _userService;
     private readonly UserMapper _userMapper;
     private readonly ChatService _chatService;
-    private readonly ChatroomMapper _chatroomMapper;
+    private readonly ChatMapper _chatMapper;
     private readonly MessageService _messageService;
     private readonly MessageMapper _messageMapper;
 
     public ChatsController(
         UserService userService,
-        ChatroomMapper chatroomMapper, 
+        ChatMapper chatMapper, 
         ChatService chatService, 
         MessageService messageService, 
         MessageMapper messageMapper, 
         UserMapper userMapper)
     {
         _userService = userService;
-        _chatroomMapper = chatroomMapper;
+        _chatMapper = chatMapper;
         _chatService = chatService;
         _messageService = messageService;
         _messageMapper = messageMapper;
@@ -40,7 +38,7 @@ public class ChatsController : ControllerBase
     public async Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request)
     {
         var entity = await _chatService.CreateChat(request.Name);
-        var model = _chatroomMapper.Map(entity);
+        var model = _chatMapper.Map(entity);
         return new CreateChatResponse { Chat = model };
     }
     
@@ -53,7 +51,7 @@ public class ChatsController : ControllerBase
             throw new ArgumentException($"Чата с id {request.ChatId} не существует");
         }
 
-        var chatModel = _chatroomMapper.Map(chat);
+        var chatModel = _chatMapper.Map(chat);
         return new GetChatResponse { Chat = chatModel };
     }
 
@@ -81,7 +79,7 @@ public class ChatsController : ControllerBase
             //Ignore
         }
 
-        return new AddUserInChatResponse { UpdatedChat = _chatroomMapper.Map(chat) };
+        return new AddUserInChatResponse { UpdatedChat = _chatMapper.Map(chat) };
     }
 
     [HttpGet("{chatId:int})/users")]
@@ -95,7 +93,7 @@ public class ChatsController : ControllerBase
 
         var users = chat.Users.Select(_userMapper.Map)
             .ToArray();
-        return new GetAllUsersInChatResponse { Chat = _chatroomMapper.Map(chat), UsersInChat = users };
+        return new GetAllUsersInChatResponse { Chat = _chatMapper.Map(chat), UsersInChat = users };
     }
     
     [HttpPost("{chatId:int}")]

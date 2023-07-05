@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlazorApp1.Server.Data.EntityConfigurations;
 
-public class ChatroomEntityConfiguration : IEntityTypeConfiguration<Chatroom>
+public class ChatroomEntityConfiguration : IEntityTypeConfiguration<Chat>
 {
-    public void Configure(EntityTypeBuilder<Chatroom> builder)
+    public void Configure(EntityTypeBuilder<Chat> builder)
     {
         builder.HasKey(chatroom => chatroom.Id);
 

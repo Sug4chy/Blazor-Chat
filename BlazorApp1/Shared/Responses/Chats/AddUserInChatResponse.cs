@@ -4,5 +4,5 @@ namespace BlazorApp1.Shared.Responses.Chats;
 
 public record AddUserInChatResponse
 {
-    public required ChatroomModel UpdatedChat { get; init; }
+    public required ChatModel UpdatedChat { get; init; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp1.Shared.Models;
 
-public record ChatroomModel
+public record ChatModel
 {
     public int Id { get; set; }
     public required string Name { get; set; }

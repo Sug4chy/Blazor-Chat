@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp1.Server.Data.Entities;
 
-public record Chatroom
+public record Chat
 {
     public int Id { get; set; }
     public required string Name { get; set; }
