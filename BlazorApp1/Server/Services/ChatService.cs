@@ -1,5 +1,6 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Server.Services;
 
@@ -25,7 +26,10 @@ public class ChatService
 
     public async Task<Chatroom?> GetChat(int chatId)
     {
-        var chat = await _db.Chatrooms.FindAsync(chatId);
+        var chat = await _db.Chatrooms
+            .Include(chat => chat.Messages)
+            .Include(chat => chat.Users)
+            .FirstAsync(chat => chat.Id == chatId);
         return chat;
     }
 

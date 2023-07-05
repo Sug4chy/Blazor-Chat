@@ -1,8 +1,6 @@
 ﻿using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
-using BlazorApp1.Shared.Requests;
 using BlazorApp1.Shared.Requests.Users;
-using BlazorApp1.Shared.Responses;
 using BlazorApp1.Shared.Responses.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,7 +53,6 @@ public class UsersController : ControllerBase
         var chats = user.Chatrooms
             .Select(_chatroomMapper.Map)
             .ToArray();
-        return new GetUserChatsResponse { Chats = chats };
+        return new GetUserChatsResponse { UserName = user.Name, Chats = chats };
     }
-
 }

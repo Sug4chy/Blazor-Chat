@@ -1,4 +1,4 @@
-﻿namespace BlazorApp1.Shared.Requests;
+﻿namespace BlazorApp1.Shared.Requests.Users;
 
 public record CreateUserRequest
 {

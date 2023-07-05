@@ -1,7 +1,6 @@
 ﻿namespace BlazorApp1.Shared.Requests.Chats;
 
-public record AddUserInChatRequest
+public record GetAllUsersInChatRequest
 {
-    public required int UserId { get; init; }
     public required int ChatId { get; init; }
 }

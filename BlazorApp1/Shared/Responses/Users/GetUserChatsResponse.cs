@@ -4,5 +4,6 @@ namespace BlazorApp1.Shared.Responses.Users;
 
 public record GetUserChatsResponse
 {
+    public required string UserName { get; init; }
     public required ChatroomModel[] Chats { get; init; }
 }

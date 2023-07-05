@@ -1,0 +1,70 @@
+﻿@page "/Chats/{ChatId:int}/users"
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Shared.Requests.Chats
+@using BlazorApp1.Shared.Responses.Chats
+@inject HttpClient HttpClient
+@if (_chat is null)
+{
+    
+}
+else
+{
+    <h3>Пользователи в чате @_chat.Name</h3>
+    <table>
+        <thead><tr><th>Id</th><th>Имя</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var user in _users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Name</td>
+                <td>
+                    <a href="users/@user.Id"> Просмотреть </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <div>
+            <p>
+                User's id: <br/>
+                <InputText @bind-Value="_newUserId"/>
+            </p>
+            <button @onclick="AddUserInChat"> Add user </button>
+    </div>
+}
+
+@code {
+    private ChatroomModel? _chat;
+    private UserModel[] _users = Array.Empty<UserModel>();
+    private string? _newUserId;
+    
+    [Parameter]
+    public int ChatId { get; set; }
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        var response = await HttpClient.GetFromJsonAsync<GetAllUsersInChatResponse>($"Chats/{ChatId})/users") ?? throw new Exception();
+        _chat = response.Chat;
+        _users = response.UsersInChat;
+    }
+
+    private async Task AddUserInChat()
+    {
+        if (!IsUserIdCorrect())
+        {
+            return;
+        }
+        var userId = int.Parse(_newUserId!);
+        await HttpClient.PutAsJsonAsync($"Chats/{ChatId}/users", new AddUserInChatRequest { ChatId = ChatId, UserId = userId });
+        await LoadData();
+        _newUserId = null;
+    }
+
+    private bool IsUserIdCorrect()
+    {
+        return int.TryParse(_newUserId, out _) && _newUserId is not null;
+    }
+}

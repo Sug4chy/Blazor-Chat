@@ -1,7 +1,9 @@
 ﻿using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
 using BlazorApp1.Shared.Requests;
+using BlazorApp1.Shared.Requests.Chats;
 using BlazorApp1.Shared.Responses;
+using BlazorApp1.Shared.Responses.Chats;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,7 @@ namespace BlazorApp1.Server.Controllers;
 public class ChatsController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly UserMapper _userMapper;
     private readonly ChatService _chatService;
     private readonly ChatroomMapper _chatroomMapper;
     private readonly MessageService _messageService;
@@ -22,13 +25,15 @@ public class ChatsController : ControllerBase
         ChatroomMapper chatroomMapper, 
         ChatService chatService, 
         MessageService messageService, 
-        MessageMapper messageMapper)
+        MessageMapper messageMapper, 
+        UserMapper userMapper)
     {
         _userService = userService;
         _chatroomMapper = chatroomMapper;
         _chatService = chatService;
         _messageService = messageService;
         _messageMapper = messageMapper;
+        _userMapper = userMapper;
     }
     
     [HttpPost]
@@ -79,7 +84,21 @@ public class ChatsController : ControllerBase
         return new AddUserInChatResponse { UpdatedChat = _chatroomMapper.Map(chat) };
     }
 
-    [HttpPost("{chatId:int}/messages")]
+    [HttpGet("{chatId:int})/users")]
+    public async Task<GetAllUsersInChatResponse> GetAllUsersInChat([FromRoute, FromBody] GetAllUsersInChatRequest request)
+    {
+        var chat = await _chatService.GetChat(request.ChatId);
+        if (chat is null)
+        {
+            throw new ArgumentException($"Чат с id {request.ChatId} не существует");
+        }
+
+        var users = chat.Users.Select(_userMapper.Map)
+            .ToArray();
+        return new GetAllUsersInChatResponse { Chat = _chatroomMapper.Map(chat), UsersInChat = users };
+    }
+    
+    [HttpPost("{chatId:int}")]
     public async Task<SendMessageResponse> SendMessage([FromBody] SendMessageRequest request)
     {
         var user = await _userService.GetUser(request.UserId);

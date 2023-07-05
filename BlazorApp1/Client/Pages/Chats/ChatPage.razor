@@ -1,0 +1,64 @@
+﻿@page "/Chats/{ChatId:int}"
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Shared.Requests.Chats
+@using BlazorApp1.Shared.Responses.Chats
+@inject HttpClient HttpClient
+@if (_chat is null)
+{
+    <p> Loading... </p>
+}
+else
+{
+    <h3>@_chat.Name</h3>
+    <div>
+        @foreach (var message in _chat.Messages)
+        {
+            <div>
+                <p>@message.SenderId: @message.Text</p>
+            </div>
+        }
+    </div>
+    <p>
+        Sender id: <br/>
+        <InputText @bind-Value="_userId"/> <br/>
+        Text: <br/>
+        <InputText @bind-Value="_text"/>
+    </p>
+    <button @onclick="SendMessage"> Отправить </button> <br/>
+    <a href="chats/@_chat.Id/users"> Добавить пользователя в чат </a>
+}
+
+@code {
+    private ChatroomModel? _chat;
+    private string? _userId;
+    private string? _text;
+        
+    [Parameter]
+    public int ChatId { get; set; }
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        var response = await HttpClient.GetFromJsonAsync<GetChatResponse>($"Chats/{ChatId}") ?? throw new Exception();
+        _chat = response.Chat;
+    }
+
+    private async Task SendMessage()
+    {
+        if (!CanSendMessage())
+        {
+            return;
+        }
+        var id = int.Parse(_userId!);
+        await HttpClient.PostAsJsonAsync($"/Chats/{ChatId}", new SendMessageRequest {ChatId = ChatId, Text = _text!, UserId = id});
+        await LoadData();
+        _text = null;
+        _userId = null;
+    }
+
+    private bool CanSendMessage()
+    {
+        return int.TryParse(_userId, out _) && _text is not null;
+    }
+}

@@ -1,5 +1,5 @@
 ﻿@page "/Chats"
-@using BlazorApp1.Shared.Requests
+@using BlazorApp1.Shared.Requests.Chats
 @inject HttpClient HttpClient
 <h2>Create new chat</h2>
 <div>
@@ -9,7 +9,6 @@
     </p>
     <button @onclick="CreateChat"> Create </button>
 </div>
-
 @code {
     private string? _chatName;
 

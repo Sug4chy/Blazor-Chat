@@ -1,6 +1,6 @@
 ﻿using BlazorApp1.Shared.Models;
 
-namespace BlazorApp1.Shared.Responses;
+namespace BlazorApp1.Shared.Responses.Chats;
 
 public record SendMessageResponse
 {

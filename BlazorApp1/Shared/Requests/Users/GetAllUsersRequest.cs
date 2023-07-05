@@ -1,6 +1,3 @@
 ﻿namespace BlazorApp1.Shared.Requests.Users;
 
-public record GetAllUsersRequest
-{
-    
-}
+public record GetAllUsersRequest;

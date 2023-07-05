@@ -1,5 +1,7 @@
 ﻿@page "/Users"
-@using BlazorApp1.Shared.Requests
+@using BlazorApp1.Shared.Models
+@using BlazorApp1.Shared.Requests.Users
+@using BlazorApp1.Shared.Responses.Users
 @inject HttpClient HttpClient
 <h2>Create new user</h2>
 <div>
@@ -7,10 +9,26 @@
         Name: <br/>
         <InputText @bind-Value="_userName"/>
     </p>
-        <button @onclick="CreateUser"> Create </button>
+    <button @onclick="CreateUser"> Create </button>
 </div>
+<table>
+    <thead><tr><th>Id</th><th>Имя</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var user in _users)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Name</td>
+            <td>
+                <a href="users/@user.Id"> Просмотреть </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 @code {
     private string? _userName;
+    private  UserModel[] _users = Array.Empty<UserModel>();
 
     private async Task CreateUser()
     {
@@ -18,6 +36,15 @@
         {
             await HttpClient.PostAsJsonAsync("/Users", new CreateUserRequest { Name = _userName });
             _userName = null;
+            await LoadData();
         }
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+    
+    private async Task LoadData()
+    {
+        var response = await HttpClient.GetFromJsonAsync<GetAllUsersResponse>("/Users") ?? throw new Exception();
+        _users = response.AllUsers;
     }
 }
