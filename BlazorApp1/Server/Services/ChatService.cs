@@ -6,11 +6,13 @@ namespace BlazorApp1.Server.Services;
 
 public class ChatService
 {
-    private readonly ApplicationContext _db;
+    private readonly IRepository<Chat> _chatDb;
+    private readonly IRepository<User> _userDb;
 
-    public ChatService(ApplicationContext db)
+    public ChatService(IRepository<Chat> chatDb, IRepository<User> userDb)
     {
-        _db = db;
+        _chatDb = chatDb;
+        _userDb = userDb;
     }
 
     public async Task<Chat> CreateChat(string name)
@@ -19,14 +21,14 @@ public class ChatService
         {
             Name = name
         };
-        await _db.Chatrooms.AddAsync(chat);
-        await _db.SaveChangesAsync();
+        await _chatDb.AddItemAsync(chat);
         return chat;
     }
 
     public async Task<Chat?> GetChat(int chatId)
     {
-        var chat = await _db.Chatrooms
+        var chats = await _chatDb.GetTableAsync();
+        var chat = await chats
             .Include(chat => chat.Messages)
             .Include(chat => chat.Users)
             .FirstAsync(chat => chat.Id == chatId);
@@ -36,9 +38,8 @@ public class ChatService
     public async Task AddUserInChat(User user, Chat chat)
     {
         chat.Users.Add(user);
-        _db.Update(user);
+        await _userDb.UpdateItemAsync(user);
         user.Chatrooms.Add(chat);
-        _db.Update(chat);
-        await _db.SaveChangesAsync();
+        await _chatDb.UpdateItemAsync(chat);
     }
 }

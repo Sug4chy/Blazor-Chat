@@ -1,5 +1,5 @@
 ﻿@page "/Users"
-@inject HttpClient HttpClient
+@inject IUsersControllerClient UsersControllerClient
 <h2>Create new user</h2>
 <div>
     <p>
@@ -31,7 +31,7 @@
     {
         if (_userName is not null)
         {
-            await HttpClient.PostAsJsonAsync("/Users", new CreateUserRequest { Name = _userName });
+            await UsersControllerClient.CreateUser(new CreateUserRequest { Name = _userName });
             _userName = null;
             await LoadData();
         }
@@ -41,7 +41,7 @@
     
     private async Task LoadData()
     {
-        var response = await HttpClient.GetFromJsonAsync<GetAllUsersResponse>("/Users") ?? throw new Exception();
+        var response = await UsersControllerClient.GetAllUsers(new GetAllUsersRequest());
         _users = response.AllUsers;
     }
 }

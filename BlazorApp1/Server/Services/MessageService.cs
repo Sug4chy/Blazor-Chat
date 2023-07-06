@@ -5,11 +5,11 @@ namespace BlazorApp1.Server.Services;
 
 public class MessageService
 {
-    private readonly ApplicationContext _db;
+    private readonly IRepository<Message> _messageDb;
 
-    public MessageService(ApplicationContext db)
+    public MessageService(IRepository<Message> messageDb)
     {
-        _db = db;
+        _messageDb = messageDb;
     }
 
     public async Task<Message> CreateMessage(string text, User sender, Chat chat)
@@ -26,9 +26,8 @@ public class MessageService
         
         chat.Messages.Add(message);
         sender.Messages.Add(message);
-        
-        await _db.Messages.AddAsync(message);
-        await _db.SaveChangesAsync();
+
+        await _messageDb.AddItemAsync(message);
         return message;
     }
 }

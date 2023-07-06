@@ -6,11 +6,11 @@ namespace BlazorApp1.Server.Services;
 
 public class UserService
 {
-    private readonly ApplicationContext _db;
+    private readonly IRepository<User> _userDb;
 
-    public UserService(ApplicationContext db)
+    public UserService(IRepository<User> userDb)
     {
-        _db = db;
+        _userDb = userDb;
     }
 
     public async Task<User> CreateUser(string name)
@@ -19,19 +19,20 @@ public class UserService
         {
             Name = name
         };
-        await _db.Users.AddAsync(user);
-        await _db.SaveChangesAsync();
+        await _userDb.AddItemAsync(user);
         return user;
     }
 
     public async Task<IReadOnlyCollection<User>> GetAllUsers()
     {
-        return await _db.Users.ToArrayAsync();
+        var users = await _userDb.GetTableAsync();
+        return await users.ToArrayAsync();
     }
 
     public async Task<User?> GetUser(int id)
     {
-        var user = await _db.Users
+        var users = await _userDb.GetTableAsync();
+            var user = await users
             .Include(u => u.Chatrooms)
             .FirstAsync(u => u.Id == id);
         return user;

@@ -1,5 +1,5 @@
 ﻿@page "/Chats/{ChatId:int}"
-@inject HttpClient HttpClient
+@inject IChatsControllerClient ChatsControllerClient
 @if (_chat is null)
 {
     <p> Loading... </p>
@@ -29,7 +29,7 @@ else
     private ChatModel? _chat;
     private string? _userId;
     private string? _text;
-        
+
     [Parameter]
     public int ChatId { get; set; }
 
@@ -37,9 +37,10 @@ else
 
     private async Task LoadData()
     {
-        var response = await HttpClient.GetFromJsonAsync<GetChatResponse>($"Chats/{ChatId}") ?? throw new Exception();
+        var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
         _chat = response.Chat;
     }
+    
 
     private async Task SendMessage()
     {
@@ -48,7 +49,7 @@ else
             return;
         }
         var id = int.Parse(_userId!);
-        await HttpClient.PostAsJsonAsync($"/Chats/{ChatId}", new SendMessageRequest {ChatId = ChatId, Text = _text!, UserId = id});
+        await ChatsControllerClient.SendMessage(new SendMessageRequest { ChatId = ChatId, Text = _text!, UserId = id });
         await LoadData();
         _text = null;
         _userId = null;

@@ -1,5 +1,5 @@
 ﻿@page "/Chats"
-@inject HttpClient HttpClient
+@inject IChatsControllerClient ChatsControllerClient
 <h2>Create new chat</h2>
 <div>
     <p>
@@ -15,7 +15,7 @@
     {
         if (_chatName is not null)
         {
-            await HttpClient.PostAsJsonAsync("/Chats", new CreateChatRequest { Name = _chatName });
+            await ChatsControllerClient.CreateChat(new CreateChatRequest { Name = _chatName });
             _chatName = null;
         }
     }

@@ -14,6 +14,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient(typeof(IRepository<>), typeof(ContextRepository<>));
+
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<MessageService>();

@@ -1,5 +1,5 @@
 ﻿@page "/Users/{UserId:int}"
-@inject HttpClient HttpClient
+@inject IUsersControllerClient UsersControllerClient
 
 <h2>@_userName</h2>
 <table>
@@ -33,7 +33,7 @@
 
     private async Task LoadData()
     {
-        var response = await HttpClient.GetFromJsonAsync<GetUserChatsResponse>($"Users/{UserId}") ?? throw new Exception();
+        var response = await UsersControllerClient.GetUserChats(new GetUserChatsRequest { UserId = UserId });
         _userName = response.UserName;
         _chats = response.Chats;
     }
