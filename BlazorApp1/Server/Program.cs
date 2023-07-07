@@ -1,6 +1,6 @@
+using BlazorApp1.Server;
 using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Mappers;
-using BlazorApp1.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,15 +14,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient(typeof(IRepository<>), typeof(ContextRepository<>));
-
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<ChatService>();
-builder.Services.AddScoped<MessageService>();
-
-builder.Services.AddScoped<UserMapper>();
-builder.Services.AddScoped<ChatMapper>();
-builder.Services.AddScoped<MessageMapper>();
+builder.Services.AddTransientServices();
+builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
 var app = builder.Build();
 using var scope = app.Services.CreateScope();

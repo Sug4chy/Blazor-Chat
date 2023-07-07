@@ -1,10 +1,11 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
+using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp1.Server.Services;
+namespace BlazorApp1.Server.Services.Implementations;
 
-public class UserService
+public class UserService : IUserService
 {
     private readonly IRepository<User> _userDb;
 

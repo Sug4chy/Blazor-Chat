@@ -1,5 +1,6 @@
-﻿using BlazorApp1.Server.Mappers;
-using BlazorApp1.Server.Services;
+﻿using AutoMapper;
+using BlazorApp1.Server.Services.Interfaces;
+using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -10,25 +11,22 @@ namespace BlazorApp1.Server.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _userService;
-    private readonly UserMapper _userMapper;
-    private readonly ChatMapper _chatMapper;
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
     public UsersController(
-        UserService userService, 
-        UserMapper userMapper, 
-        ChatMapper chatMapper)
+        IUserService userService, 
+        IMapper mapper)
     {
         _userService = userService;
-        _userMapper = userMapper;
-        _chatMapper = chatMapper;
+        _mapper = mapper;
     }
 
     [HttpPost]
     public async Task<CreateUserResponse> CreateUser([FromBody] CreateUserRequest request)
     {
         var entity = await _userService.CreateUser(request.Name);
-        var model = _userMapper.Map(entity);
+        var model = _mapper.Map<UserModel>(entity);
         return new CreateUserResponse { User = model };
     }
     
@@ -36,7 +34,7 @@ public class UsersController : ControllerBase
     public async Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request)
     {
         var entities = await _userService.GetAllUsers();
-        var models = entities.Select(_userMapper.Map)
+        var models = entities.Select(_mapper.Map<UserModel>)
             .ToArray();
         return new GetAllUsersResponse { AllUsers = models };
     }
@@ -51,7 +49,7 @@ public class UsersController : ControllerBase
         }
 
         var chats = user.Chatrooms
-            .Select(_chatMapper.Map)
+            .Select(_mapper.Map<ChatModel>)
             .ToArray();
         return new GetUserChatsResponse { UserName = user.Name, Chats = chats };
     }

@@ -1,5 +1,10 @@
-﻿using BlazorApp1.Server.Mappers;
+﻿using AutoMapper;
+using BlazorApp1.Server.Data.Entities;
+using BlazorApp1.Server.Mappers;
 using BlazorApp1.Server.Services;
+using BlazorApp1.Server.Services.Implementations;
+using BlazorApp1.Server.Services.Interfaces;
+using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
 using BlazorApp1.Shared.Responses.Chats;
 using Microsoft.AspNetCore.Mvc;
@@ -11,34 +16,28 @@ namespace BlazorApp1.Server.Controllers;
 [Route("[controller]")]
 public class ChatsController : ControllerBase
 {
-    private readonly UserService _userService;
-    private readonly UserMapper _userMapper;
-    private readonly ChatService _chatService;
-    private readonly ChatMapper _chatMapper;
-    private readonly MessageService _messageService;
-    private readonly MessageMapper _messageMapper;
+    private readonly IUserService _userService;
+    private readonly IChatService _chatService;
+    private readonly IMessageService _messageService;
+    private readonly IMapper _mapper;
 
     public ChatsController(
-        UserService userService,
-        ChatMapper chatMapper, 
-        ChatService chatService, 
-        MessageService messageService, 
-        MessageMapper messageMapper, 
-        UserMapper userMapper)
+        IUserService userService,
+        IChatService chatService, 
+        IMessageService messageService, 
+        IMapper mapper)
     {
         _userService = userService;
-        _chatMapper = chatMapper;
         _chatService = chatService;
         _messageService = messageService;
-        _messageMapper = messageMapper;
-        _userMapper = userMapper;
+        _mapper = mapper;
     }
     
     [HttpPost]
     public async Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request)
     {
         var entity = await _chatService.CreateChat(request.Name);
-        var model = _chatMapper.Map(entity);
+        var model = _mapper.Map<ChatModel>(entity);
         return new CreateChatResponse { Chat = model };
     }
     
@@ -51,7 +50,7 @@ public class ChatsController : ControllerBase
             throw new ArgumentException($"Чата с id {request.ChatId} не существует");
         }
 
-        var chatModel = _chatMapper.Map(chat);
+        var chatModel = _mapper.Map<ChatModel>(chat);
         return new GetChatResponse { Chat = chatModel };
     }
 
@@ -79,7 +78,7 @@ public class ChatsController : ControllerBase
             //Ignore
         }
 
-        return new AddUserInChatResponse { UpdatedChat = _chatMapper.Map(chat) };
+        return new AddUserInChatResponse { UpdatedChat = _mapper.Map<ChatModel>(chat) };
     }
 
     [HttpGet("{chatId:int})/users")]
@@ -91,9 +90,9 @@ public class ChatsController : ControllerBase
             throw new ArgumentException($"Чат с id {request.ChatId} не существует");
         }
 
-        var users = chat.Users.Select(_userMapper.Map)
+        var users = chat.Users.Select(_mapper.Map<UserModel>)
             .ToArray();
-        return new GetAllUsersInChatResponse { Chat = _chatMapper.Map(chat), UsersInChat = users };
+        return new GetAllUsersInChatResponse { Chat = _mapper.Map<ChatModel>(chat), UsersInChat = users };
     }
     
     [HttpPost("{chatId:int}")]
@@ -112,7 +111,7 @@ public class ChatsController : ControllerBase
         }
 
         var message = await _messageService.CreateMessage(request.Text, user, chat);
-        var messageModel = _messageMapper.Map(message);
+        var messageModel = _mapper.Map<MessageModel>(message);
         return new SendMessageResponse { Message = messageModel };
     }
 }

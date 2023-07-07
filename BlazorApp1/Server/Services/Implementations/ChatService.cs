@@ -1,10 +1,11 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
+using BlazorApp1.Server.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Server.Services;
 
-public class ChatService
+public class ChatService : IChatService
 {
     private readonly IRepository<Chat> _chatDb;
     private readonly IRepository<User> _userDb;

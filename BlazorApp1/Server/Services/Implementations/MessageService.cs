@@ -1,9 +1,10 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
+using BlazorApp1.Server.Services.Implementations;
 
-namespace BlazorApp1.Server.Services;
+namespace BlazorApp1.Server.Services.Interfaces;
 
-public class MessageService
+public class MessageService : IMessageService
 {
     private readonly IRepository<Message> _messageDb;
 
