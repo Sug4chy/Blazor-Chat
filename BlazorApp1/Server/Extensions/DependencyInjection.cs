@@ -1,10 +1,9 @@
 ﻿using BlazorApp1.Server.Data;
-using BlazorApp1.Server.Services.Implementations;
 using BlazorApp1.Server.Services.Interfaces;
 
-namespace BlazorApp1.Server;
+namespace BlazorApp1.Server.Extensions;
 
-public static class Extensions
+public static class DependencyInjection
 {
     public static void AddTransientServices(this IServiceCollection collection)
     {

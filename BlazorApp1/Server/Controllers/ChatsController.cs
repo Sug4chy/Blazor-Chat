@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using BlazorApp1.Server.Data.Entities;
-using BlazorApp1.Server.Mappers;
-using BlazorApp1.Server.Services;
-using BlazorApp1.Server.Services.Implementations;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -39,6 +35,26 @@ public class ChatsController : ControllerBase
         var entity = await _chatService.CreateChat(request.Name);
         var model = _mapper.Map<ChatModel>(entity);
         return new CreateChatResponse { Chat = model };
+    }
+
+    [HttpGet]
+    public async Task<GetAllChatsResponse> GetAllChats([FromQuery] GetAllChatsRequest request)
+    {
+        var chats = await _chatService.GetAllChats();
+        return new GetAllChatsResponse {AllChats = chats.Select(_mapper.Map<ChatModel>).ToArray()};
+    }
+
+    [HttpDelete]
+    public async Task<DeleteChatResponse> DeleteChat([FromQuery] DeleteChatRequest request)
+    {
+        var chat = await _chatService.GetChat(request.ChatId);
+        if (chat is null)
+        {
+            throw new ArgumentException($"Чата с id {request.ChatId} не существует");
+        }
+
+        await _chatService.DeleteChat(chat);
+        return new DeleteChatResponse();
     }
     
     [HttpGet("{chatId:int}")]
@@ -81,7 +97,7 @@ public class ChatsController : ControllerBase
         return new AddUserInChatResponse { UpdatedChat = _mapper.Map<ChatModel>(chat) };
     }
 
-    [HttpGet("{chatId:int})/users")]
+    [HttpGet("{ChatId:int}/users")]
     public async Task<GetAllUsersInChatResponse> GetAllUsersInChat([FromRoute, FromBody] GetAllUsersInChatRequest request)
     {
         var chat = await _chatService.GetChat(request.ChatId);

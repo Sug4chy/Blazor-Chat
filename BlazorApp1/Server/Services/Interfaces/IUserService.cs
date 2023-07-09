@@ -7,4 +7,5 @@ public interface IUserService
     public Task<User> CreateUser(string name);
     public Task<IReadOnlyCollection<User>> GetAllUsers();
     public Task<User?> GetUser(int id);
+    public Task DeleteUser(User user);
 }

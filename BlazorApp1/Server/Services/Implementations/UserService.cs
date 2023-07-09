@@ -38,4 +38,9 @@ public class UserService : IUserService
             .FirstAsync(u => u.Id == id);
         return user;
     }
+
+    public async Task DeleteUser(User user)
+    {
+        await _userDb.DeleteItemAsync(user);
+    }
 }

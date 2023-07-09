@@ -6,7 +6,7 @@ namespace BlazorApp1.Server.Data;
 public class ApplicationContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<Chat> Chatrooms => Set<Chat>();
+    public DbSet<Chat> Chats => Set<Chat>();
     public DbSet<Message> Messages => Set<Message>();
 
     public ApplicationContext(DbContextOptions options) : base(options) { }

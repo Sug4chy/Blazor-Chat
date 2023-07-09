@@ -29,6 +29,19 @@ public class UsersController : ControllerBase
         var model = _mapper.Map<UserModel>(entity);
         return new CreateUserResponse { User = model };
     }
+
+    [HttpDelete]
+    public async Task<DeleteUserResponse> DeleteUser([FromQuery] DeleteUserRequest request)
+    {
+        var user = await _userService.GetUser(request.UserId);
+        if (user is null)
+        {
+            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
+        }
+
+        await _userService.DeleteUser(user);
+        return new DeleteUserResponse();
+    }
     
     [HttpGet]
     public async Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request)

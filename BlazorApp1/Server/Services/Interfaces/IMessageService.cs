@@ -1,6 +1,6 @@
 ﻿using BlazorApp1.Server.Data.Entities;
 
-namespace BlazorApp1.Server.Services.Implementations;
+namespace BlazorApp1.Server.Services.Interfaces;
 
 public interface IMessageService
 {

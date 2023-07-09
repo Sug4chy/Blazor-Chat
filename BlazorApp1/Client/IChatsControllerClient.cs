@@ -6,18 +6,24 @@ namespace BlazorApp1.Client;
 
 public interface IChatsControllerClient
 {
-    [Get("/Chats/{request.ChatId}")]
+    [Get("/chats/{request.ChatId}")]
     Task<GetChatResponse> GetChat(GetChatRequest request);
 
-    [Post("/Chats/{request.ChatId}")]
+    [Post("/chats/{request.ChatId}")]
     Task<SendMessageResponse> SendMessage(SendMessageRequest request);
 
-    [Post("/Chats")]
+    [Post("/chats")]
     Task<CreateChatResponse> CreateChat(CreateChatRequest request);
 
-    [Get("/Chats/{request.ChatId}/users")]
+    [Get("/chats")]
+    Task<GetAllChatsResponse> GetAllChats(GetAllChatsRequest request);
+
+    [Delete("/chats")]
+    Task<DeleteChatResponse> DeleteChat(DeleteChatRequest request);
+
+    [Get("/chats/{request.ChatId}/users")]
     Task<GetAllUsersInChatResponse> GetAllUsersInChat(GetAllUsersInChatRequest request);
 
-    [Put("/Chats/{request.ChatId}/users")]
+    [Put("/chats/{request.ChatId}/users")]
     Task<AddUserInChatResponse> AddUserInChat(AddUserInChatRequest request);
 }

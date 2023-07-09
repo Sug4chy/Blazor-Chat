@@ -1,8 +1,8 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
-using BlazorApp1.Server.Services.Implementations;
+using BlazorApp1.Server.Services.Interfaces;
 
-namespace BlazorApp1.Server.Services.Interfaces;
+namespace BlazorApp1.Server.Services.Implementations;
 
 public class MessageService : IMessageService
 {

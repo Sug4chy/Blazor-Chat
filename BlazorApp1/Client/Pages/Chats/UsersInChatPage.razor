@@ -1,8 +1,8 @@
-﻿@page "/Chats/{ChatId:int}/users"
+﻿@page "/chats/{ChatId:int}/users"
 @inject IChatsControllerClient ChatsControllerClient
 @if (_chat is null)
 {
-    
+    <p> Loading... </p>
 }
 else
 {

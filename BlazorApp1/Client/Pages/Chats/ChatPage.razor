@@ -1,4 +1,4 @@
-﻿@page "/Chats/{ChatId:int}"
+﻿@page "/chats/{ChatId:int}"
 @inject IChatsControllerClient ChatsControllerClient
 @if (_chat is null)
 {
@@ -40,7 +40,6 @@ else
         var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
         _chat = response.Chat;
     }
-    
 
     private async Task SendMessage()
     {

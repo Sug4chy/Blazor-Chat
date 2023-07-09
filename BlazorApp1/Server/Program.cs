@@ -1,5 +1,5 @@
-using BlazorApp1.Server;
 using BlazorApp1.Server.Data;
+using BlazorApp1.Server.Extensions;
 using BlazorApp1.Server.Mappers;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +38,6 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 
 app.MapRazorPages();
 app.MapControllers();

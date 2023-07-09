@@ -6,12 +6,15 @@ namespace BlazorApp1.Client;
 
 public interface IUsersControllerClient
 {
-    [Post("/Users")]
+    [Post("/users")]
     Task<CreateUserResponse> CreateUser(CreateUserRequest request);
 
-    [Get("/Users")]
+    [Get("/users")]
     Task<GetAllUsersResponse> GetAllUsers(GetAllUsersRequest request);
 
-    [Get("/Users/{request.UserId}")]
+    [Get("/users/{request.UserId}")]
     Task<GetUserChatsResponse> GetUserChats(GetUserChatsRequest request);
+
+    [Delete("/users")]
+    Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request);
 }

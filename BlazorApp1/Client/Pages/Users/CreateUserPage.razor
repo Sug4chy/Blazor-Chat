@@ -1,4 +1,4 @@
-﻿@page "/Users"
+﻿@page "/users"
 @inject IUsersControllerClient UsersControllerClient
 <h2>Create new user</h2>
 <div>
@@ -18,6 +18,9 @@
             <td>@user.Name</td>
             <td>
                 <a href="users/@user.Id"> Просмотреть </a>
+            </td>
+            <td>
+                <button @onclick="async () => await DeleteUser(user.Id)"> Delete </button>
             </td>
         </tr>
     }
@@ -43,5 +46,11 @@
     {
         var response = await UsersControllerClient.GetAllUsers(new GetAllUsersRequest());
         _users = response.AllUsers;
+    }
+
+    private async Task DeleteUser(int userId)
+    {
+        await UsersControllerClient.DeleteUser(new DeleteUserRequest { UserId = userId });
+        await LoadData();
     }
 }

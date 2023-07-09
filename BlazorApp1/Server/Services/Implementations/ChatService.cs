@@ -1,9 +1,9 @@
 ﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
-using BlazorApp1.Server.Services.Implementations;
+using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp1.Server.Services;
+namespace BlazorApp1.Server.Services.Implementations;
 
 public class ChatService : IChatService
 {
@@ -32,7 +32,7 @@ public class ChatService : IChatService
         var chat = await chats
             .Include(chat => chat.Messages)
             .Include(chat => chat.Users)
-            .FirstAsync(chat => chat.Id == chatId);
+            .FirstOrDefaultAsync(chat => chat.Id == chatId);
         return chat;
     }
 
@@ -42,5 +42,16 @@ public class ChatService : IChatService
         await _userDb.UpdateItemAsync(user);
         user.Chatrooms.Add(chat);
         await _chatDb.UpdateItemAsync(chat);
+    }
+
+    public async Task DeleteChat(Chat chat)
+    {
+        await _chatDb.DeleteItemAsync(chat);
+    }
+
+    public async Task<IReadOnlyCollection<Chat>> GetAllChats()
+    {
+        var chats = await _chatDb.GetTableAsync();
+        return await chats.ToArrayAsync();
     }
 }

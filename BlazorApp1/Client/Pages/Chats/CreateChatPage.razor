@@ -1,15 +1,41 @@
-﻿@page "/Chats"
+﻿@page "/chats"
 @inject IChatsControllerClient ChatsControllerClient
-<h2>Create new chat</h2>
+<h2> Создайте новый чат! </h2>
 <div>
     <p>
         Name: <br/>
         <InputText @bind-Value="_chatName"/>
     </p>
-    <button @onclick="CreateChat"> Create </button>
+    <button @onclick="CreateChat"> Создать </button>
 </div>
+@if (_chats is null)
+{
+    <p> Загрузка... </p>
+}
+else
+{
+    <table>
+        <thead><tr><th>Id</th><th>Имя</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var chat in _chats)
+        {
+            <tr>
+                <td>@chat.Id</td>
+                <td>@chat.Name</td>
+                <td>
+                    <a href="chats/@chat.Id"> Просмотреть </a>
+                </td>
+                <td>
+                    <button @onclick="async () => await DeleteChat(chat.Id)"> Удалить </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 @code {
     private string? _chatName;
+    private ChatModel[]? _chats;
 
     private async Task CreateChat()
     {
@@ -18,5 +44,19 @@
             await ChatsControllerClient.CreateChat(new CreateChatRequest { Name = _chatName });
             _chatName = null;
         }
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+    
+    private async Task LoadData()
+    {
+        var response = await ChatsControllerClient.GetAllChats(new GetAllChatsRequest());
+        _chats = response.AllChats;
+    }
+
+    private async Task DeleteChat(int id)
+    {
+        await ChatsControllerClient.DeleteChat(new DeleteChatRequest { ChatId = id });
+        await LoadData();
     }
 }
