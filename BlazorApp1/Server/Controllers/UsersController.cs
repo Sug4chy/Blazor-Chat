@@ -7,6 +7,7 @@ using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Server.Controllers;
@@ -43,15 +44,20 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize]
     public async Task<DeleteUserResponse> DeleteUser([FromQuery] DeleteUserRequest request)
     {
-        var user = await _userService.GetUser(request.UserId);
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value); //Можно вынести в метод расширения ClaimsPrincipal
+
+
+        var user = await _userService.GetUser(userId);
         if (user is null)
         {
             throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
 
         await _userService.DeleteUser(user);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return new DeleteUserResponse();
     }
     
