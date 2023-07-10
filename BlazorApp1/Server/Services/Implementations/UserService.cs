@@ -1,4 +1,6 @@
-﻿using BlazorApp1.Server.Data;
+﻿using System.Security.Cryptography;
+using System.Text;
+using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
 using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ namespace BlazorApp1.Server.Services.Implementations;
 
 public class UserService : IUserService
 {
+	private const string Salt = "BLAZORAPP1";
     private readonly IRepository<User> _userDb;
 
     public UserService(IRepository<User> userDb)
@@ -14,11 +17,12 @@ public class UserService : IUserService
         _userDb = userDb;
     }
 
-    public async Task<User> CreateUser(string name)
+    public async Task<User> CreateUser(string name, string password)
     {
-        var user = new User
+	    var user = new User
         {
-            Name = name
+            Name = name,
+            PasswordHash = HashPassword(password)
         };
         await _userDb.AddItemAsync(user);
         return user;
@@ -42,5 +46,12 @@ public class UserService : IUserService
     public async Task DeleteUser(User user)
     {
         await _userDb.DeleteItemAsync(user);
+    }
+
+    public string HashPassword(string password)
+    { 
+	    var passwordBytes = Encoding.UTF8.GetBytes(password + Salt);
+	    var passwordHash = SHA256.HashData(passwordBytes);
+        return Encoding.UTF8.GetString(passwordHash);
     }
 }

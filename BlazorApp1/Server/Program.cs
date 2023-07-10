@@ -1,6 +1,8 @@
 using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Extensions;
 using BlazorApp1.Server.Mappers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +16,27 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransientServices();
+#region Cookies Auth
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddCookie(options =>
+	{
+		options.ExpireTimeSpan = TimeSpan.FromHours(1);
+		options.SlidingExpiration = true;
+	});
+
+#endregion
+#region MyRegion
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//	.AddJwtBearer(options =>
+//	{
+//		options.RefreshInterval = TimeSpan.FromMinutes(30);
+//	});
+
+#endregion
+
+builder.Services.AddDefaultServices();
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
 var app = builder.Build();
@@ -37,6 +59,9 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();

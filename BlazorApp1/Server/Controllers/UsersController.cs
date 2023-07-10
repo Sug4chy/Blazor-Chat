@@ -1,8 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
+using BlazorApp1.Server.Data.Entities;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Server.Controllers;
@@ -23,10 +27,18 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<CreateUserResponse> CreateUser([FromBody] CreateUserRequest request)
-    {
-        var entity = await _userService.CreateUser(request.Name);
-        var model = _mapper.Map<UserModel>(entity);
+    public async Task<CreateUserResponse> CreateUser([FromForm] CreateUserRequest request)
+	{
+        var entity = await _userService.CreateUser(request.Name, request.Password);
+
+        // AUTHENTICATION-->
+		var claim = new Claim(ClaimTypes.NameIdentifier, entity.Id.ToString());
+		var identity = new ClaimsIdentity(new[] { claim }, CookieAuthenticationDefaults.AuthenticationScheme);
+		var principal = new ClaimsPrincipal(identity);
+		await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+		// <--AUTHENTICATION
+
+		var model = _mapper.Map<UserModel>(entity);
         return new CreateUserResponse { User = model };
     }
 
