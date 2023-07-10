@@ -2,5 +2,5 @@
 
 public record DeleteUserRequest
 {
-    public required int UserId { get; init; }
+    public int UserId { get; init; }
 }
