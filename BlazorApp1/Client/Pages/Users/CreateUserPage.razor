@@ -5,6 +5,8 @@
     <p>
         Name: <br/>
         <InputText @bind-Value="_userName"/>
+        Password: <br />
+        <InputText @bind-Value="_password" />
     </p>
     <button @onclick="CreateUser"> Create </button>
 </div>
@@ -28,13 +30,14 @@
 </table>
 @code {
     private string? _userName;
+    private string? _password;
     private  UserModel[] _users = Array.Empty<UserModel>();
 
     private async Task CreateUser()
     {
-        if (_userName is not null)
+        if (_userName is not null && _password is not null)
         {
-            await UsersControllerClient.CreateUser(new CreateUserRequest { Name = _userName });
+            await UsersControllerClient.CreateUser(new CreateUserRequest { Name = _userName, Password = _password });
             _userName = null;
             await LoadData();
         }
