@@ -3,6 +3,8 @@ using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
 using BlazorApp1.Shared.Responses.Chats;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,35 +18,32 @@ public class ChatsController : ControllerBase
     private readonly IChatService _chatService;
     private readonly IMessageService _messageService;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
     public ChatsController(
         IUserService userService,
         IChatService chatService, 
         IMessageService messageService, 
-        IMapper mapper)
+        IMapper mapper, 
+        IMediator mediator)
     {
         _userService = userService;
         _chatService = chatService;
         _messageService = messageService;
         _mapper = mapper;
+        _mediator = mediator;
     }
-    
+
     [HttpPost]
-    public async Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request)
-    {
-        var entity = await _chatService.CreateChat(request.Name);
-        var model = _mapper.Map<ChatModel>(entity);
-        return new CreateChatResponse { Chat = model };
-    }
+    [Authorize]
+    public Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request) => _mediator.Send(request);
 
     [HttpGet]
-    public async Task<GetAllChatsResponse> GetAllChats([FromQuery] GetAllChatsRequest request)
-    {
-        var chats = await _chatService.GetAllChats();
-        return new GetAllChatsResponse {AllChats = chats.Select(_mapper.Map<ChatModel>).ToArray()};
-    }
+    [Authorize]
+    public Task<GetAllChatsResponse> GetAllChats([FromQuery] GetAllChatsRequest request) => _mediator.Send(request);
 
     [HttpDelete]
+    [Authorize]
     public async Task<DeleteChatResponse> DeleteChat([FromQuery] DeleteChatRequest request)
     {
         var chat = await _chatService.GetChat(request.ChatId);
@@ -58,6 +57,7 @@ public class ChatsController : ControllerBase
     }
     
     [HttpGet("{chatId:int}")]
+    [Authorize]
     public async Task<GetChatResponse> GetChat([FromRoute, FromBody] GetChatRequest request)
     {
         var chat = await _chatService.GetChat(request.ChatId);
@@ -71,6 +71,7 @@ public class ChatsController : ControllerBase
     }
 
     [HttpPut("{chatId:int}/users")]
+    [Authorize]
     public async Task<AddUserInChatResponse> AddUserInChat([FromBody] AddUserInChatRequest request)
     {
         var user = await _userService.GetUser(request.UserId);
@@ -98,6 +99,7 @@ public class ChatsController : ControllerBase
     }
 
     [HttpGet("{ChatId:int}/users")]
+    [Authorize]
     public async Task<GetAllUsersInChatResponse> GetAllUsersInChat([FromRoute, FromBody] GetAllUsersInChatRequest request)
     {
         var chat = await _chatService.GetChat(request.ChatId);
@@ -112,6 +114,7 @@ public class ChatsController : ControllerBase
     }
     
     [HttpPost("{chatId:int}")]
+    [Authorize]
     public async Task<SendMessageResponse> SendMessage([FromBody] SendMessageRequest request)
     {
         var user = await _userService.GetUser(request.UserId);

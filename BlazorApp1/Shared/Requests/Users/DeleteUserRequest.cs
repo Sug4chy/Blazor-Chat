@@ -1,6 +1,11 @@
-﻿namespace BlazorApp1.Shared.Requests.Users;
+﻿using System.Security.Claims;
+using BlazorApp1.Shared.Responses.Users;
+using MediatR;
 
-public record DeleteUserRequest
+namespace BlazorApp1.Shared.Requests.Users;
+
+public record DeleteUserRequest : IRequest<DeleteUserResponse>
 {
-    public required int UserId { get; init; }
+    public ClaimsPrincipal? User { get; init; }
+    public int UserId { get; init; }
 }

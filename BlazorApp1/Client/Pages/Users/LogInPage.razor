@@ -1,0 +1,32 @@
+﻿@page "/users/auth"
+@inject IUsersControllerClient UsersControllerClient
+<h2> Log in </h2>
+<div>
+    <p>
+            Name: <br/>
+            <InputText @bind-Value="_userName"/> <br/>
+            Password: <br/>
+            <InputText type="password" @bind-Value="_password"/>
+        </p>
+        <button @onclick="LogIn"> Log in </button>
+</div>
+@code {
+    private string? _userName;
+    private string? _password;
+
+    private async Task LogIn()
+    {
+        if (!CanLogIn())
+        {
+            throw new ArgumentException($"Введите данные.");
+        }
+        await UsersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = _userName!, Password = _password! });
+        _userName = null;
+        _password = null;
+    }
+
+    private bool CanLogIn()
+    {
+        return _userName is not null && _password is not null;
+    }
+}

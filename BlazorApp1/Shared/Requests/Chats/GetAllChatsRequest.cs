@@ -1,3 +1,9 @@
-﻿namespace BlazorApp1.Shared.Requests.Chats;
+﻿using BlazorApp1.Shared.Responses.Chats;
+using MediatR;
 
-public record GetAllChatsRequest();
+namespace BlazorApp1.Shared.Requests.Chats;
+
+public record GetAllChatsRequest : IRequest<GetAllChatsResponse>
+{
+    
+}

@@ -1,3 +1,9 @@
-﻿namespace BlazorApp1.Shared.Requests.Users;
+﻿using BlazorApp1.Shared.Responses.Users;
+using MediatR;
 
-public record GetAllUsersRequest;
+namespace BlazorApp1.Shared.Requests.Users;
+
+public record GetAllUsersRequest : IRequest<GetAllUsersResponse>
+{
+    
+}

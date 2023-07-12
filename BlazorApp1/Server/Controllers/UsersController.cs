@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using BlazorApp1.Server.Services.Interfaces;
-using BlazorApp1.Shared.Models;
-using BlazorApp1.Shared.Requests.Users;
+﻿using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
+using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorApp1.Server.Controllers;
@@ -11,59 +12,43 @@ namespace BlazorApp1.Server.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _userService;
-    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public UsersController(
-        IUserService userService, 
-        IMapper mapper)
+    public UsersController(IMediator mediator)
     {
-        _userService = userService;
-        _mapper = mapper;
+        _mediator = mediator;
     }
 
     [HttpPost]
     public async Task<CreateUserResponse> CreateUser([FromBody] CreateUserRequest request)
     {
-        var entity = await _userService.CreateUser(request.Name);
-        var model = _mapper.Map<UserModel>(entity);
-        return new CreateUserResponse { User = model };
+        var response = await _mediator.Send(request);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.Principal);
+        return response;
+    }
+
+    [HttpPost("auth")]
+    public async Task<AuthorizeUserResponse> AuthorizeUser([FromBody] AuthorizeUserRequest request)
+    {
+        var response = await _mediator.Send(request);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.User!);
+        return new AuthorizeUserResponse { User = null };
     }
 
     [HttpDelete]
+    [Authorize]
     public async Task<DeleteUserResponse> DeleteUser([FromQuery] DeleteUserRequest request)
     {
-        var user = await _userService.GetUser(request.UserId);
-        if (user is null)
-        {
-            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
-        }
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        var response = await _mediator.Send(request);
+        return response;
+    }
 
-        await _userService.DeleteUser(user);
-        return new DeleteUserResponse();
-    }
-    
     [HttpGet]
-    public async Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request)
-    {
-        var entities = await _userService.GetAllUsers();
-        var models = entities.Select(_mapper.Map<UserModel>)
-            .ToArray();
-        return new GetAllUsersResponse { AllUsers = models };
-    }
+    public Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request) => _mediator.Send(request);
 
     [HttpGet("{userId:int}")]
-    public async Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request)
-    {
-        var user = await _userService.GetUser(request.UserId);
-        if (user is null)
-        {
-            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
-        }
-
-        var chats = user.Chatrooms
-            .Select(_mapper.Map<ChatModel>)
-            .ToArray();
-        return new GetUserChatsResponse { UserName = user.Name, Chats = chats };
-    }
+    [Authorize]
+    public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request) => 
+        _mediator.Send(request);
 }

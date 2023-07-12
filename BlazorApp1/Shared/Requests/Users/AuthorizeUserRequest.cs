@@ -3,8 +3,8 @@ using MediatR;
 
 namespace BlazorApp1.Shared.Requests.Users;
 
-public record CreateUserRequest : IRequest<CreateUserResponse>
+public record AuthorizeUserRequest : IRequest<AuthorizeUserResponse>
 {
-    public required string Name { get; init; }
+    public required string UserName { get; init; }
     public required string Password { get; init; }
 }

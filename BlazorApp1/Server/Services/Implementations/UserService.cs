@@ -1,4 +1,6 @@
-﻿using BlazorApp1.Server.Data;
+﻿using System.Security.Cryptography;
+using System.Text;
+using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
 using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +10,20 @@ namespace BlazorApp1.Server.Services.Implementations;
 public class UserService : IUserService
 {
     private readonly IRepository<User> _userDb;
+    private readonly IAuthService _authService;
 
-    public UserService(IRepository<User> userDb)
+    public UserService(IRepository<User> userDb, IAuthService authService)
     {
         _userDb = userDb;
+        _authService = authService;
     }
 
-    public async Task<User> CreateUser(string name)
+    public async Task<User> CreateUser(string name, string password)
     {
         var user = new User
         {
-            Name = name
+            Name = name,
+            HashPassword = await _authService.HashPassword(password)
         };
         await _userDb.AddItemAsync(user);
         return user;

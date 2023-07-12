@@ -16,13 +16,16 @@ public class ChatService : IChatService
         _userDb = userDb;
     }
 
-    public async Task<Chat> CreateChat(string name)
+    public async Task<Chat> CreateChat(string name, User user)
     {
         var chat = new Chat
         {
             Name = name
         };
+        chat.Users.Add(user);
+        user.Chatrooms.Add(chat);
         await _chatDb.AddItemAsync(chat);
+        await _userDb.UpdateItemAsync(user);
         return chat;
     }
 

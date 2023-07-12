@@ -17,4 +17,7 @@ public interface IUsersControllerClient
 
     [Delete("/users")]
     Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request);
+
+    [Post("/users/auth")]
+    Task<AuthorizeUserResponse> AuthorizeUser(AuthorizeUserRequest request);
 }
