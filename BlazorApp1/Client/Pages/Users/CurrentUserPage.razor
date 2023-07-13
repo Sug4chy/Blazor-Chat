@@ -1,0 +1,16 @@
+﻿@page "/users/current"
+@inject IUsersControllerClient UsersControllerClient
+@inject NavigationManager NavigationManager
+<h3>@_user.Name</h3>
+
+@code {
+    private UserModel? _user;
+    
+    protected override async Task OnInitializedAsync() => await TryLoadData();
+
+    private async Task TryLoadData()
+    {
+        var response = await UsersControllerClient.GetCurrentUser(new GetCurrentUserRequest());
+        _user = response.CurrentUser;
+    }
+}

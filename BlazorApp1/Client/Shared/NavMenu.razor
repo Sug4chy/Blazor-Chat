@@ -1,5 +1,6 @@
-﻿@inject IUsersControllerClient UsersControllerClient
-@inject NavigationManager NavigationManager
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject IUsersControllerClient UsersControllerClient
+@inject IWebAssemblyHostEnvironment HostEnvironment
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">BlazorApp1</a>
@@ -11,43 +12,50 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="chats">
-                <span class="oi oi-chat" aria-hidden="true"></span> Create Chat
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="users">
-                <span class="oi oi-person" aria-hidden="true"></span> Create User
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="users/auth">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Log in
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@($"users/{_userId}")">
-                <span class="oi oi-person" aria-hidden="true"></span> Current User
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="swagger">
-                <span class="oi oi-script" aria-hidden="true"></span> Swagger
-            </NavLink>
-        </div>
+        @if (_user is null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <span class="oi oi-person" aria-hidden="true"></span> Create User
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users/auth">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Log in
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users/current">
+                    <span class="oi oi-person" aria-hidden="true"></span> Current User
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@($"users/{_user.Id}")">
+                    <span class="oi oi-chat" aria-hidden="true"></span> Your Chats
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="chats">
+                    <span class="oi oi-chat" aria-hidden="true"></span> Create Chat
+                </NavLink>
+            </div>
+        }
+        @if (HostEnvironment.IsDevelopment())
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="swagger">
+                    <span class="oi oi-script" aria-hidden="true"></span> Swagger
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
 @code {
-    private int? _userId;
-    private string f => $"users/{_userId}";
-    
+    private UserModel? _user;
     private bool _collapseNavMenu = true;
 
     private string? NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
@@ -57,12 +65,11 @@
         _collapseNavMenu = !_collapseNavMenu;
     }
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    protected override async Task OnInitializedAsync() => await TryGetUser();
 
-    private async Task LoadData()
+    private async Task TryGetUser()
     {
         var response = await UsersControllerClient.GetCurrentUser(new GetCurrentUserRequest());
-        _userId = response.CurrentUser?.Id;
-        NavigationManager.NavigateTo($"users/{_userId}");
+        _user = response.CurrentUser;
     }
 }

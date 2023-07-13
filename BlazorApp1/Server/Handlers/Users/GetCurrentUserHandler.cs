@@ -21,6 +21,11 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
 
     public async Task<GetCurrentUserResponse> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
+        if (request.User is null)
+        {
+            return new GetCurrentUserResponse();
+        }
+
         var userId = int.Parse(request.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var user = await _userService.GetUser(userId);
         return new GetCurrentUserResponse { CurrentUser = _mapper.Map<UserModel>(user) };
