@@ -30,6 +30,7 @@ builder.Services.AddMediatR(mediatr =>
 {
     mediatr.RegisterServicesFromAssemblyContaining<Program>();
 });
+builder.Services.AddErrorHandling();
 
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
@@ -51,6 +52,7 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseErrorHandling();
 
 app.UseAuthentication();
 app.UseAuthorization();

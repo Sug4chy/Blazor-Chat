@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -25,10 +26,8 @@ public class CreateChatHandler : IRequestHandler<CreateChatRequest, CreateChatRe
     {
         var userId = int.Parse(request.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var user = await _userService.GetUser(userId);
-        if (user is null)
-        {
-            throw new ArgumentException($"Пользователя с id {userId} не существует");
-        }
+        NotFoundException.ThrowIfNull(user);
+
         var entity = await _chatService.CreateChat(request.Name, user);
         var model = _mapper.Map<ChatModel>(entity);
         return new CreateChatResponse { Chat = model };

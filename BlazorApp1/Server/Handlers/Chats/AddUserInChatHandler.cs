@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -25,17 +26,11 @@ public class AddUserInChatHandler : IRequestHandler<AddUserInChatRequest, AddUse
     {
         
         var user = await _userService.GetUser(request.UserId);
-        if (user is null)
-        {
-            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
-        }
+        NotFoundException.ThrowIfNull(user);
 
         var chat = await _chatService.GetChat(request.ChatId);
-        if (chat is null)
-        {
-            throw new ArgumentException($"Пользователя с id {request.ChatId} не существует");
-        }
-
+        NotFoundException.ThrowIfNull(chat);
+        
         try
         {
             await _chatService.AddUserInChat(user, chat);

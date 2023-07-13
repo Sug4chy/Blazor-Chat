@@ -16,8 +16,6 @@ else
         }
     </div>
     <p>
-        Sender id: <br/>
-        <InputText @bind-Value="_userId"/> <br/>
         Text: <br/>
         <InputText @bind-Value="_text"/>
     </p>
@@ -27,7 +25,6 @@ else
 
 @code {
     private ChatModel? _chat;
-    private string? _userId;
     private string? _text;
 
     [Parameter]
@@ -47,15 +44,13 @@ else
         {
             return;
         }
-        var id = int.Parse(_userId!);
-        await ChatsControllerClient.SendMessage(new SendMessageRequest { ChatId = ChatId, Text = _text!, UserId = id });
+        await ChatsControllerClient.SendMessage(new SendMessageRequest { ChatId = ChatId, Text = _text! });
         await LoadData();
         _text = null;
-        _userId = null;
     }
 
     private bool CanSendMessage()
     {
-        return int.TryParse(_userId, out _) && _text is not null;
+        return _text is not null;
     }
 }

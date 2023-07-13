@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Server.Services.Interfaces;
+﻿using BlazorApp1.Server.Exceptions;
+using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Requests.Chats;
 using BlazorApp1.Shared.Responses.Chats;
 using MediatR;
@@ -17,10 +18,7 @@ public class DeleteChatHandler : IRequestHandler<DeleteChatRequest, DeleteChatRe
     public async Task<DeleteChatResponse> Handle(DeleteChatRequest request, CancellationToken cancellationToken)
     {
         var chat = await _chatService.GetChat(request.ChatId);
-        if (chat is null)
-        {
-            throw new ArgumentException($"Чата с id {request.ChatId} не существует");
-        }
+        NotFoundException.ThrowIfNull(chat);
 
         await _chatService.DeleteChat(chat);
         return new DeleteChatResponse();

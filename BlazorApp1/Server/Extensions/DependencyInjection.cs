@@ -1,4 +1,5 @@
 ﻿using BlazorApp1.Server.Data;
+using BlazorApp1.Server.Middlewares;
 using BlazorApp1.Server.Services.Interfaces;
 
 namespace BlazorApp1.Server.Extensions;
@@ -27,4 +28,10 @@ public static class DependencyInjection
                 .WithScopedLifetime();
         });
     }
+
+    public static IApplicationBuilder UseErrorHandling(this IApplicationBuilder app) =>
+        app.UseMiddleware<ErrorHandlingMiddleware>();
+
+    public static IServiceCollection AddErrorHandling(this IServiceCollection services) =>
+        services.AddScoped<ErrorHandlingMiddleware>();
 }

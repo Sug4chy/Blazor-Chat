@@ -1,5 +1,4 @@
 ﻿@page "/chats"
-@using System.Security.Claims
 @inject IChatsControllerClient ChatsControllerClient
 <h2> Создайте новый чат! </h2>
 <div>
@@ -42,8 +41,9 @@ else
     {
         if (_chatName is not null)
         {
-            await ChatsControllerClient.CreateChat(new CreateChatRequest { Name = _chatName, User = new ClaimsPrincipal()});
+            await ChatsControllerClient.CreateChat(new CreateChatRequest { Name = _chatName });
             _chatName = null;
+            await LoadData();
         }
     }
 

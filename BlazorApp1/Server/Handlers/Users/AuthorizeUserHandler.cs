@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Server.Services.Interfaces;
+﻿using BlazorApp1.Server.Exceptions;
+using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using MediatR;
@@ -31,6 +32,6 @@ public class AuthorizeUserHandler : IRequestHandler<AuthorizeUserRequest, Author
             return new AuthorizeUserResponse { User = principal };
         }
 
-        throw new ArgumentException($"Неверный логин или пароль");
+        throw new NotFoundException("Неверный логин или пароль");
     }
 }

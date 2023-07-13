@@ -3,7 +3,4 @@ using MediatR;
 
 namespace BlazorApp1.Shared.Requests.Users;
 
-public record GetAllUsersRequest : IRequest<GetAllUsersResponse>
-{
-    
-}
+public record GetAllUsersRequest : IRequest<GetAllUsersResponse>;

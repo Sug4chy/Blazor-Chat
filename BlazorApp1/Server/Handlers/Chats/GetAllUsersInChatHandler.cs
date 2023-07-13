@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -21,10 +22,7 @@ public class GetAllUsersInChatHandler : IRequestHandler<GetAllUsersInChatRequest
     public async Task<GetAllUsersInChatResponse> Handle(GetAllUsersInChatRequest request, CancellationToken cancellationToken)
     {
         var chat = await _chatService.GetChat(request.ChatId);
-        if (chat is null)
-        {
-            throw new ArgumentException($"Чат с id {request.ChatId} не существует");
-        }
+        NotFoundException.ThrowIfNull(chat);
 
         var users = chat.Users.Select(_mapper.Map<UserModel>)
             .ToArray();

@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Shared.Requests.Chats;
+﻿using System.Security.Claims;
+using BlazorApp1.Shared.Requests.Chats;
 using BlazorApp1.Shared.Responses.Chats;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +20,8 @@ public class ChatsController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request) => _mediator.Send(request);
+    public Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request) =>
+        _mediator.Send(request with { User = User });
 
     [HttpGet]
     [Authorize]
@@ -45,5 +47,9 @@ public class ChatsController : ControllerBase
 
     [HttpPost("{chatId:int}")]
     [Authorize]
-    public Task<SendMessageResponse> SendMessage([FromBody] SendMessageRequest request) => _mediator.Send(request);
+    public Task<SendMessageResponse> SendMessage([FromBody] SendMessageRequest request) 
+        => _mediator.Send(request with
+    {
+        UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)
+    });
 }

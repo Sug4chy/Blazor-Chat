@@ -51,4 +51,9 @@ public class UsersController : ControllerBase
     [Authorize]
     public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request) => 
         _mediator.Send(request);
+
+    [HttpGet("current")]
+    [Authorize]
+    public Task<GetCurrentUserResponse> GetCurrentUser([FromQuery] GetCurrentUserRequest request) =>
+        _mediator.Send(new GetCurrentUserRequest { User = User });
 }

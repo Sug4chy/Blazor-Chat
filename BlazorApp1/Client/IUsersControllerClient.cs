@@ -20,4 +20,7 @@ public interface IUsersControllerClient
 
     [Post("/users/auth")]
     Task<AuthorizeUserResponse> AuthorizeUser(AuthorizeUserRequest request);
+
+    [Get("/users/current")]
+    Task<GetCurrentUserResponse> GetCurrentUser(GetCurrentUserRequest request);
 }

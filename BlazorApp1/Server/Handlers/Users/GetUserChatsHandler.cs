@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using AutoMapper;
-using BlazorApp1.Server.Data.Entities;
+﻿using AutoMapper;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Users;
@@ -22,11 +20,10 @@ public class GetUserChatsHandler : IRequestHandler<GetUserChatsRequest, GetUserC
 
     public async Task<GetUserChatsResponse> Handle(GetUserChatsRequest request, CancellationToken cancellationToken)
     {
-        var userId = int.Parse(request.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = await _userService.GetUser(userId);
+        var user = await _userService.GetUser(request.UserId);
         if (user is null)
         {
-            throw new ArgumentException($"Пользователя с id {userId} не существует");
+            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
 
         var chats = user.Chatrooms

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -21,11 +22,7 @@ public class GetChatHandler : IRequestHandler<GetChatRequest, GetChatResponse>
     public async Task<GetChatResponse> Handle(GetChatRequest request, CancellationToken cancellationToken)
     {
         var chat = await _chatService.GetChat(request.ChatId);
-        if (chat is null)
-        {
-            throw new ArgumentException($"Чата с id {request.ChatId} не существует");
-        }
-
+        NotFoundException.ThrowIfNull(chat);
         var chatModel = _mapper.Map<ChatModel>(chat);
         return new GetChatResponse { Chat = chatModel };
     }

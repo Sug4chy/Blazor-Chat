@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Chats;
@@ -23,10 +24,7 @@ public class SendMessageHandler : IRequestHandler<SendMessageRequest, SendMessag
     public async Task<SendMessageResponse> Handle(SendMessageRequest request, CancellationToken cancellationToken)
     {
         var user = await _userService.GetUser(request.UserId);
-        if (user is null)
-        {
-            throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
-        }
+        NotFoundException.ThrowIfNull(user);
 
         var chat = user.Chatrooms.FirstOrDefault(chat => chat.Id == request.ChatId);
         if (chat is null)

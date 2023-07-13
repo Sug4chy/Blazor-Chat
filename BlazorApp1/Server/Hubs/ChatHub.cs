@@ -1,7 +1,9 @@
 ﻿using System.Security.Claims;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared;
+using BlazorApp1.Shared.HubContracts;
 using BlazorApp1.Shared.Requests.Chats;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -11,15 +13,17 @@ namespace BlazorApp1.Server.Hubs;
 public class ChatHub : Hub<IChatHubClient>, IChatHub
 {
     private readonly IUserService _userService;
+    private readonly IMediator _mediator;
 
-    public ChatHub(IUserService userService)
+    public ChatHub(IUserService userService, IMediator mediator)
     {
         _userService = userService;
+        _mediator = mediator;
     }
 
-    public async Task SendMessage(SendMessageRequest request)
+    public Task SendMessage(SendMessageRequest request)
     {
-        
+        return _mediator.Send(request);
     }
 
     public override async Task OnConnectedAsync()

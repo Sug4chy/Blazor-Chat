@@ -4,7 +4,6 @@ using BlazorApp1.Shared.Models;
 using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace BlazorApp1.Server.Handlers.Users;
 

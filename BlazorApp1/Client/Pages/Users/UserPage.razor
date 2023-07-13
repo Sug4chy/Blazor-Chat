@@ -5,7 +5,7 @@
 <table>
     <thead><tr><th> Название чата </th></tr></thead>
     <tbody>
-    @if (_chats.Length == 0)
+    @if (_chats is null)
     {
         <p>Loading...</p>
     }
@@ -24,7 +24,7 @@
 
 @code {
     private string? _userName;
-    private ChatModel[] _chats = Array.Empty<ChatModel>();
+    private ChatModel[]? _chats;
     
     [Parameter]
     public int UserId { get; set; }
@@ -35,6 +35,6 @@
     {
         var response = await UsersControllerClient.GetUserChats(new GetUserChatsRequest { UserId = UserId });
         _userName = response.UserName;
-        _chats = response.Chats;
+        _chats = response.Chats.Length == 0 ? null : response.Chats;
     }
 }

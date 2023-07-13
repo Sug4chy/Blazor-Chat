@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BlazorApp1.Shared.Requests.Users;
 
-public record GetUserChatsRequest : IRequest<GetUserChatsResponse>
+public record GetCurrentUserRequest : IRequest<GetCurrentUserResponse>
 {
-    public required int UserId { get; init; }
+    public ClaimsPrincipal? User { get; init; }
 }

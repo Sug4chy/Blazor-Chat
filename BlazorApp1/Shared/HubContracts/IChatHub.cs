@@ -1,6 +1,6 @@
 ﻿using BlazorApp1.Shared.Requests.Chats;
 
-namespace BlazorApp1.Server.Hubs;
+namespace BlazorApp1.Shared.HubContracts;
 
 public interface IChatHub
 {
