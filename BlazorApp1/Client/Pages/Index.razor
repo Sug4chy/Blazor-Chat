@@ -1,9 +1,18 @@
 ﻿@page "/"
+@inject IUsersControllerClient UsersControllerClient
+@inject NavigationManager NavigationManager
+@code {
 
-<PageTitle>Index</PageTitle>
+    protected override async Task OnInitializedAsync() => await TryGetUser();
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?"/>
+    private async Task TryGetUser()
+    {
+        var response = await UsersControllerClient.GetCurrentUser(new GetCurrentUserRequest());
+        if (response.CurrentUser is null)
+        {
+            NavigationManager.NavigateTo("/users");
+            return;
+        }
+        NavigationManager.NavigateTo("/users/current");
+    }
+}

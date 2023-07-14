@@ -1,26 +1,25 @@
 ﻿@page "/users/{UserId:int}"
 @inject IUsersControllerClient UsersControllerClient
-
-<h2>@_userName</h2>
-<table>
-    <thead><tr><th> Название чата </th></tr></thead>
-    <tbody>
-    @if (_chats is null)
-    {
-        <p>Loading...</p>
-    }
-    else
-    {
+@if (_chats is null)
+{
+    <Loading/>
+}
+else
+{
+    <h2>@_userName</h2>
+    <table>
+        <thead><tr><th> Название чата </th></tr></thead>
+        <tbody>
         @foreach (var chat in _chats)
         {
             <tr>
                 <td> @chat.Name </td>
-                <td><a href="http://localhost:5111/Chats/@chat.Id"> Просмотреть </a></td>
+                <td><a href="chats/@chat.Id"> Просмотреть </a></td>
             </tr>
         }
-    }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
 
 @code {
     private string? _userName;

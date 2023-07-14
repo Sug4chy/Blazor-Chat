@@ -1,8 +1,14 @@
 ﻿@page "/users/current"
 @inject IUsersControllerClient UsersControllerClient
 @inject NavigationManager NavigationManager
-<h3>@_user.Name</h3>
-
+@if (_user is null)
+{
+    <Loading/>
+}
+else
+{
+    <h3>@_user!.Name</h3>
+}
 @code {
     private UserModel? _user;
     

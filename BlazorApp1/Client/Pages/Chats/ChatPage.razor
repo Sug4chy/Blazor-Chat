@@ -2,7 +2,7 @@
 @inject IChatsControllerClient ChatsControllerClient
 @if (_chat is null)
 {
-    <p> Loading... </p>
+    <Loading/>
 }
 else
 {
@@ -48,7 +48,7 @@ else
         await LoadData();
         _text = null;
     }
-
+    
     private bool CanSendMessage()
     {
         return _text is not null;

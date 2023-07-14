@@ -1,5 +1,6 @@
 ﻿@page "/users"
 @inject IUsersControllerClient UsersControllerClient
+@inject NavigationManager NavigationManager
 <h2>Create new user</h2>
 <div>
     <p>
@@ -10,28 +11,9 @@
     </p>
     <button @onclick="CreateUser"> Create </button>
 </div>
-<table>
-    <thead><tr><th>Id</th><th>Имя</th><th></th></tr></thead>
-    <tbody>
-    @foreach (var user in _users)
-    {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.Name</td>
-            <td>
-                <a href="users/@user.Id"> Просмотреть </a>
-            </td>
-            <td>
-                <button @onclick="async () => await DeleteUser(user.Id)"> Delete </button>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
 @code {
     private string? _userName;
     private string? _password;
-    private  UserModel[] _users = Array.Empty<UserModel>();
 
     private async Task CreateUser()
     {
@@ -40,24 +22,7 @@
             await UsersControllerClient.CreateUser(new CreateUserRequest { Name = _userName, Password = _password});
             _userName = null;
             _password = null;
-            await LoadData();
+            NavigationManager.NavigateTo("users/current");
         }
-    }
-
-    protected override async Task OnInitializedAsync() => await LoadData();
-    
-    private async Task LoadData()
-    {
-        var response = await UsersControllerClient.GetAllUsers(new GetAllUsersRequest());
-        if (response.AllUsers.Length > 0)
-        {
-            _users = response.AllUsers;
-        }
-    }
-
-    private async Task DeleteUser(int userId)
-    {
-        await UsersControllerClient.DeleteUser(new DeleteUserRequest { UserId = userId });
-        await LoadData();
     }
 }

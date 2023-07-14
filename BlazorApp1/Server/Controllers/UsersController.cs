@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
     public async Task<DeleteUserResponse> DeleteUser([FromQuery] DeleteUserRequest request)
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var response = await _mediator.Send(request);
+        var response = await _mediator.Send(request with { User = User });
         return response;
     }
 
