@@ -23,10 +23,10 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
     {
         if (request.User is null)
         {
-            return new GetCurrentUserResponse();
+            return new GetCurrentUserResponse { CurrentUser = null };
         }
 
-        var userId = int.Parse(request.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userId = int.Parse(request.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var user = await _userService.GetUser(userId);
         return new GetCurrentUserResponse { CurrentUser = _mapper.Map<UserModel>(user) };
     }

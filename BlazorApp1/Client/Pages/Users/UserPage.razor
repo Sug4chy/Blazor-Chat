@@ -7,18 +7,25 @@
 else
 {
     <h2>@_userName</h2>
-    <table>
-        <thead><tr><th> Название чата </th></tr></thead>
-        <tbody>
-        @foreach (var chat in _chats)
-        {
-            <tr>
-                <td> @chat.Name </td>
-                <td><a href="chats/@chat.Id"> Просмотреть </a></td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    @if (_chats.Length == 0)
+    {
+        <p> Вы ещё не состоите ни в каких чатах </p>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th> Название чата </th></tr></thead>
+            <tbody>
+            @foreach (var chat in _chats)
+            {
+                <tr>
+                    <td> @chat.Name </td>
+                    <td><a href="chats/@chat.Id"> Просмотреть </a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
 }
 
 @code {
@@ -34,6 +41,6 @@ else
     {
         var response = await UsersControllerClient.GetUserChats(new GetUserChatsRequest { UserId = UserId });
         _userName = response.UserName;
-        _chats = response.Chats.Length == 0 ? null : response.Chats;
+        _chats = response.Chats.Length == 0 ? Array.Empty<ChatModel>() : response.Chats;
     }
 }

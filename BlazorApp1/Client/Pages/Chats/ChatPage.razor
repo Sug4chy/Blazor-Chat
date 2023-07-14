@@ -35,6 +35,7 @@ else
     private async Task LoadData()
     {
         var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
+        var a = await new HttpClient().GetFromJsonAsync<GetChatResponse>($"Chats/{ChatId}");
         _chat = response.Chat;
     }
 

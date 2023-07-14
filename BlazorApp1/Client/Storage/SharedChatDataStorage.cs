@@ -21,19 +21,24 @@ public class SharedChatDataStorage
         _httpClient = httpClient;
     }
 
-    public async Task<UserModel> GetCurrentUserAsync()
+    public async Task<UserModel?> GetCurrentUserAsync()
     {
         if (_currentUserId is null)
         {
             await FetchCurrentUserAsync();
         }
-
-        return _users[_currentUserId!.Value];
+        
+        return _currentUserId is not null ? _users[_currentUserId.Value] : null;
     }
 
-    public async Task FetchCurrentUserAsync()
+    private async Task FetchCurrentUserAsync()
     {
-        var response = await SafeGetHttp<GetCurrentUserResponse>("api/users/current");
+        var response = await SafeGetHttp<GetCurrentUserResponse>("Users/current");
+        if (response.CurrentUser is null)
+        {
+            return;
+        }
+
         _currentUserId = response.CurrentUser?.Id;
         _users[_currentUserId!.Value] = response.CurrentUser!;
         CurrentUserUpdated?.Invoke(response.CurrentUser!);
@@ -48,7 +53,9 @@ public class SharedChatDataStorage
             return _users.Values.ToArray();
         }
 
-        var response = await SafeGetHttp<GetAllUsersResponse>("api/users");
+        //var response = await SafeGetHttp<GetAllUsersResponse>("api/Users");
+        var response = await _httpClient.GetFromJsonAsync<GetAllUsersResponse>("Users/current");
+        ArgumentNullException.ThrowIfNull(response);
         var users = response.AllUsers;
         foreach (var user in users)
         {
@@ -66,7 +73,7 @@ public class SharedChatDataStorage
             return _chats.Values.Select(c => c.Chat).ToArray();
         }
 
-        var response = await SafeGetHttp<GetAllChatsResponse>("api/chats");
+        var response = await SafeGetHttp<GetAllChatsResponse>("api/Chats");
         var chats = response.AllChats;
         foreach (var chat in chats)
         {

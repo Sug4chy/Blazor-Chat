@@ -53,7 +53,6 @@ public class UsersController : ControllerBase
         _mediator.Send(request);
 
     [HttpGet("current")]
-    [Authorize]
     public Task<GetCurrentUserResponse> GetCurrentUser([FromQuery] GetCurrentUserRequest request) =>
-        _mediator.Send(new GetCurrentUserRequest { User = User });
+        _mediator.Send(request with {User = User});
 }

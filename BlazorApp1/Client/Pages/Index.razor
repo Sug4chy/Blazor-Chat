@@ -1,5 +1,4 @@
 ﻿@page "/"
-@inject IUsersControllerClient UsersControllerClient
 @inject NavigationManager NavigationManager
 @code {
 
@@ -7,8 +6,8 @@
 
     private async Task TryGetUser()
     {
-        var response = await UsersControllerClient.GetCurrentUser(new GetCurrentUserRequest());
-        if (response.CurrentUser is null)
+        var currentUser = await Storage.GetCurrentUserAsync();
+        if (currentUser is null)
         {
             NavigationManager.NavigateTo("/users");
             return;

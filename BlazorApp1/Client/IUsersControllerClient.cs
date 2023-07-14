@@ -22,5 +22,5 @@ public interface IUsersControllerClient
     Task<AuthorizeUserResponse> AuthorizeUser(AuthorizeUserRequest request);
 
     [Get("/users/current")]
-    Task<GetCurrentUserResponse> GetCurrentUser(GetCurrentUserRequest request);
+    Task<GetCurrentUserResponse> GetCurrentUser();
 }

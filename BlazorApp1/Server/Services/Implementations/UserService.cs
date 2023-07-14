@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using BlazorApp1.Server.Data;
+﻿using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
 using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +38,7 @@ public class UserService : IUserService
         var users = await _userDb.GetTableAsync();
             var user = await users
             .Include(u => u.Chatrooms)
+            .Include(u => u.Messages)
             .FirstAsync(u => u.Id == id);
         return user;
     }
