@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlazorApp1.Server.Data.EntityConfigurations;
 
-public class ChatroomEntityConfiguration : IEntityTypeConfiguration<Chat>
+public class ChatEntityConfiguration : IEntityTypeConfiguration<Chat>
 {
     public void Configure(EntityTypeBuilder<Chat> builder)
     {

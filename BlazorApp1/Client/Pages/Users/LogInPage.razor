@@ -16,17 +16,11 @@
 
     private async Task LogIn()
     {
-        if (!CanLogIn())
+        if (_userName is not null && _password is not null)
         {
-            throw new ArgumentException($"Введите данные.");
+            await UsersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = _userName, Password = _password });
+            _userName = null;
+            _password = null;
         }
-        await UsersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = _userName!, Password = _password! });
-        _userName = null;
-        _password = null;
-    }
-
-    private bool CanLogIn()
-    {
-        return _userName is not null && _password is not null;
     }
 }

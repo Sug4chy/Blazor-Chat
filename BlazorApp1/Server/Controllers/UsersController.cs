@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Shared.Requests.Users;
+﻿using System.Security.Claims;
+using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -23,8 +24,8 @@ public class UsersController : ControllerBase
     public async Task<CreateUserResponse> CreateUser([FromBody] CreateUserRequest request)
     {
         var response = await _mediator.Send(request);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.Principal);
-        return response;
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.User!);
+        return response with { User = null };
     }
 
     [HttpPost("auth")]
@@ -53,6 +54,11 @@ public class UsersController : ControllerBase
         _mediator.Send(request);
 
     [HttpGet("current")]
-    public Task<GetCurrentUserResponse> GetCurrentUser([FromQuery] GetCurrentUserRequest request) =>
-        _mediator.Send(request with {User = User});
+    public Task<GetCurrentUserResponse> GetCurrentUser()
+    {
+        var a = User.FindFirst(ClaimTypes.NameIdentifier);
+        return _mediator.Send(a is null
+            ? new GetCurrentUserRequest { User = new NullUser() }
+            : new GetCurrentUserRequest { User = User });
+    }
 }

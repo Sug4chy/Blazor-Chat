@@ -5,6 +5,6 @@ namespace BlazorApp1.Shared.Responses.Users;
 
 public record CreateUserResponse
 {
-    public required ClaimsPrincipal Principal { get; init; }
-    public required UserModel User { get; init; }
+    public ClaimsPrincipal? User { get; init; }
+    public required UserModel CreatedUser { get; init; }
 }

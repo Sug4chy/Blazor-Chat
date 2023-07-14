@@ -68,6 +68,7 @@
 
     private async Task TryGetUser()
     {
+        Storage.CurrentUserUpdated += _ => StateHasChanged();
         var currentUser = await Storage.GetCurrentUserAsync();
         _user = currentUser;
     }

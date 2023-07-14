@@ -53,8 +53,7 @@ public class SharedChatDataStorage
             return _users.Values.ToArray();
         }
 
-        //var response = await SafeGetHttp<GetAllUsersResponse>("api/Users");
-        var response = await _httpClient.GetFromJsonAsync<GetAllUsersResponse>("Users/current");
+        var response = await SafeGetHttp<GetAllUsersResponse>("api/Users");
         ArgumentNullException.ThrowIfNull(response);
         var users = response.AllUsers;
         foreach (var user in users)

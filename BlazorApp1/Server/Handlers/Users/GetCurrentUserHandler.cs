@@ -21,7 +21,7 @@ public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserRequest, GetC
 
     public async Task<GetCurrentUserResponse> Handle(GetCurrentUserRequest request, CancellationToken cancellationToken)
     {
-        if (request.User is null)
+        if (request.User is NullUser)
         {
             return new GetCurrentUserResponse { CurrentUser = null };
         }
