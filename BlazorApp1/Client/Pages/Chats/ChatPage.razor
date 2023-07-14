@@ -1,5 +1,5 @@
 ﻿@page "/chats/{ChatId:int}"
-@inject IChatsControllerClient ChatsControllerClient
+@inject ChatHubClient HubClient
 @if (_chat is null)
 {
     <Loading/>
@@ -8,7 +8,7 @@ else
 {
     <h3>@_chat.Name</h3>
     <div>
-        @foreach (var message in _chat.Messages)
+        @foreach (var message in _messages.Values)
         {
             <div>
                 <p>@message.SenderId: @message.Text</p>
@@ -25,33 +25,38 @@ else
 
 @code {
     private ChatModel? _chat;
-    private string? _text;
+    private Dictionary<int, MessageModel> _messages = new();
+    private string _text = string.Empty;
 
     [Parameter]
     public int ChatId { get; set; }
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    protected override async Task OnInitializedAsync()
+    {
+        HubClient.OnMessageSent += AddMessage;
+        await HubClient.StartAsync();
+        await LoadData();
+    }
 
     private async Task LoadData()
     {
-        var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
-        var a = await new HttpClient().GetFromJsonAsync<GetChatResponse>($"Chats/{ChatId}");
-        _chat = response.Chat;
+        _chat = await Storage.GetChatAsync(ChatId);
+        _messages = _chat.Messages.ToDictionary(msg => msg.Id, msg => msg);
     }
 
     private async Task SendMessage()
     {
-        if (!CanSendMessage())
+        if (_chat is null || _text == string.Empty)
         {
             return;
         }
-        await ChatsControllerClient.SendMessage(new SendMessageRequest { ChatId = ChatId, Text = _text! });
-        await LoadData();
-        _text = null;
+        await HubClient.SendMessage(new SendMessageRequest { ChatId = _chat.Id, Text = _text });
+        _text = string.Empty;
     }
-    
-    private bool CanSendMessage()
+
+    private void AddMessage(SendMessageResponse response)
     {
-        return _text is not null;
+        _messages.Add(response.Message.Id, response.Message);
+        StateHasChanged();
     }
 }

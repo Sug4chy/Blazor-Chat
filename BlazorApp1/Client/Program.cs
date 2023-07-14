@@ -16,6 +16,8 @@ builder.Services.AddRefitClient<IChatsControllerClient>()
 builder.Services.AddRefitClient<IUsersControllerClient>()
     .ConfigureHttpClient(client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
+builder.Services.AddApiAuthorization();
 builder.Services.AddScoped<SharedChatDataStorage>();
+builder.Services.AddScoped<ChatHubClient>();
 
 await builder.Build().RunAsync();

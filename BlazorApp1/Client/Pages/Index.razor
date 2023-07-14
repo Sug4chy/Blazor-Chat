@@ -9,7 +9,7 @@
         var currentUser = await Storage.GetCurrentUserAsync();
         if (currentUser is null)
         {
-            NavigationManager.NavigateTo("/users");
+            NavigationManager.NavigateTo("/users/auth");
             return;
         }
         NavigationManager.NavigateTo("/users/current");

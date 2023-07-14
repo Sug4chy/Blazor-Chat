@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
+using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
-using BlazorApp1.Shared;
 using BlazorApp1.Shared.HubContracts;
 using BlazorApp1.Shared.Requests.Chats;
 using MediatR;
@@ -12,18 +12,19 @@ namespace BlazorApp1.Server.Hubs;
 [Authorize]
 public class ChatHub : Hub<IChatHubClient>, IChatHub
 {
-    private readonly IUserService _userService;
     private readonly IMediator _mediator;
+    private readonly IUserService _userService;
 
-    public ChatHub(IUserService userService, IMediator mediator)
+    public ChatHub(IMediator mediator, IUserService userService)
     {
-        _userService = userService;
         _mediator = mediator;
+        _userService = userService;
     }
 
     public Task SendMessage(SendMessageRequest request)
     {
-        return _mediator.Send(request);
+        var userId = int.Parse(Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        return _mediator.Send(request with { UserId = userId });
     }
 
     public override async Task OnConnectedAsync()
@@ -32,11 +33,14 @@ public class ChatHub : Hub<IChatHubClient>, IChatHub
         await base.OnConnectedAsync();
     }
 
-    public async Task JoinGroups()
+    private async Task JoinGroups()
     {
         var userId = int.Parse(Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var user = await _userService.GetUser(userId);
-        var chatIds = user!.Chatrooms.Select(chat => chat.Id);
+        NotFoundException.ThrowIfNull(user);
+
+        var chatIds = user.Chatrooms.Select(chat => chat.Id);
+
         foreach (var chatId in chatIds)
         {
             var groupName = $"Chat_{chatId}";

@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Shared.Requests.Chats;
+﻿using BlazorApp1.Shared.Models;
+using BlazorApp1.Shared.Requests.Chats;
 
 namespace BlazorApp1.Shared.HubContracts;
 

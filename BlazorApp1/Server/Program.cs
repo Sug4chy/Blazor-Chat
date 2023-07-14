@@ -60,6 +60,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-app.MapHub<ChatHub>($"/chats");
+app.MapHub<ChatHub>("api/hubs/chat");
 
 app.Run();

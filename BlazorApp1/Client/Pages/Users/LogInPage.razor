@@ -7,8 +7,9 @@
             <InputText @bind-Value="_userName"/> <br/>
             Password: <br/>
             <InputText type="password" @bind-Value="_password"/>
-        </p>
-        <button @onclick="LogIn"> Log in </button>
+    </p>
+    <button @onclick="LogIn"> Log in </button> <br/>
+    <a href="users"> Зарегистрироваться </a>
 </div>
 @code {
     private string? _userName;

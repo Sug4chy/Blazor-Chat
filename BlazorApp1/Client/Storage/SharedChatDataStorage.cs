@@ -10,15 +10,18 @@ namespace BlazorApp1.Client.Storage;
 public class SharedChatDataStorage
 {
     private readonly HttpClient _httpClient;
+    private readonly ChatHubClient _chatHubClient;
     private readonly IDictionary<int, UserModel> _users = new ConcurrentDictionary<int, UserModel>();
     private readonly IDictionary<int, StoredChatData> _chats = new ConcurrentDictionary<int, StoredChatData>();
     private readonly IDictionary<int, MessageModel> _messages = new ConcurrentDictionary<int, MessageModel>();
     private bool _allUsersLoaded;
     private int? _currentUserId;
 
-    public SharedChatDataStorage(HttpClient httpClient)
+    public SharedChatDataStorage(HttpClient httpClient, ChatHubClient chatHubClient)
     {
         _httpClient = httpClient;
+        _chatHubClient = chatHubClient;
+        _chatHubClient.OnMessageSent += AddMessage;
     }
 
     public async Task<UserModel?> GetCurrentUserAsync()
@@ -93,7 +96,7 @@ public class SharedChatDataStorage
             return data.Chat;
         }
 
-        var result = await _httpClient.GetFromJsonAsync<GetChatResponse>($"api/Chats/{id}");
+        var result = await _httpClient.GetFromJsonAsync<GetChatResponse>($"Chats/{id}");
         var chat = result!.Chat;
         
         _chats[id] = new StoredChatData { Chat = chat, IsPreviewLoaded = false };
