@@ -8,10 +8,7 @@ public interface IChatsControllerClient
 {
     [Get("/chats/{request.ChatId}")]
     Task<GetChatResponse> GetChat(GetChatRequest request);
-
-    [Post("/chats/{request.ChatId}")]
-    Task<SendMessageResponse> SendMessage(SendMessageRequest request);
-
+    
     [Post("/chats")]
     Task<CreateChatResponse> CreateChat(CreateChatRequest request);
 

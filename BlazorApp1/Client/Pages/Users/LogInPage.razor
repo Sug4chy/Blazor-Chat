@@ -22,6 +22,7 @@
             await UsersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = _userName, Password = _password });
             _userName = null;
             _password = null;
+            NavigationManager.NavigateTo("/");
         }
     }
 }

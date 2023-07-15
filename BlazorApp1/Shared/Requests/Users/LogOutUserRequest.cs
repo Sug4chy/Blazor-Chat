@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlazorApp1.Shared.Requests.Users;
 
-public record GetUserChatsRequest : IRequest<GetUserChatsResponse>
+public record LogOutUserRequest : IRequest<LogOutUserResponse>
 {
     public required int UserId { get; init; }
 }

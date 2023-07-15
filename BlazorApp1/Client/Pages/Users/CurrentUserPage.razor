@@ -1,11 +1,13 @@
 ﻿@page "/users/current"
+@inject IUsersControllerClient UsersControllerClient
 @if (_user is null)
 {
     <Loading/>
 }
 else
 {
-    <h3>@_user?.Name</h3>
+    <h3>@_user?.Name</h3> <br/>
+    <button @onclick="LogOutUser"> Log out </button>
 }
 @code {
     private UserModel? _user;
@@ -16,5 +18,16 @@ else
     {
         var currentUser = await Storage.GetCurrentUserAsync();
         _user = currentUser;
+    }
+
+    private async Task LogOutUser()
+    {
+        Storage.CurrentUserUpdated += _ =>
+        {
+            _user = null;
+            StateHasChanged();
+        };
+        _ = await UsersControllerClient.LogOutUser(new LogOutUserRequest { UserId = _user!.Id });
+        NavigationManager.NavigateTo("/");
     }
 }

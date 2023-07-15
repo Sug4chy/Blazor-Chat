@@ -7,6 +7,10 @@
     private async Task TryGetUser()
     {
         var currentUser = await Storage.GetCurrentUserAsync();
+        Storage.CurrentUserUpdated += c =>
+        {
+            currentUser = c;
+        };
         if (currentUser is null)
         {
             NavigationManager.NavigateTo("/users/auth");

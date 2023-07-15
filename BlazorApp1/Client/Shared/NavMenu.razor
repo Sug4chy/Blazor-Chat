@@ -59,12 +59,11 @@
         _collapseNavMenu = !_collapseNavMenu;
     }
 
-    protected override async Task OnInitializedAsync() => await TryGetUser();
-
-    private async Task TryGetUser()
+    protected override async Task OnInitializedAsync()
     {
-        Storage.CurrentUserUpdated += _ => StateHasChanged();
         var currentUser = await Storage.GetCurrentUserAsync();
         _user = currentUser;
+        Storage.CurrentUserUpdated += _ => StateHasChanged();
     }
+    
 }

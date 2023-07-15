@@ -12,7 +12,7 @@ public interface IUsersControllerClient
     [Get("/users")]
     Task<GetAllUsersResponse> GetAllUsers(GetAllUsersRequest request);
 
-    [Get("/users/{request.UserId}")]
+    [Get("/Users/{request.UserId}")]
     Task<GetUserChatsResponse> GetUserChats(GetUserChatsRequest request);
 
     [Delete("/users")]
@@ -23,4 +23,7 @@ public interface IUsersControllerClient
 
     [Get("/users/current")]
     Task<GetCurrentUserResponse> GetCurrentUser();
+
+    [Post("/users/current")]
+    Task<LogOutUserResponse> LogOutUser(LogOutUserRequest request);
 }

@@ -25,10 +25,8 @@ public class GetUserChatsHandler : IRequestHandler<GetUserChatsRequest, GetUserC
         {
             throw new ArgumentException($"Пользователя с id {request.UserId} не существует");
         }
-
-        var chats = user.Chatrooms
-            .Select(_mapper.Map<ChatModel>)
-            .ToArray();
-        return new GetUserChatsResponse { UserName = user.Name, Chats = chats };
+        
+        var chats = user.Chatrooms.Select(_mapper.Map<ChatModel>).ToArray();
+        return new GetUserChatsResponse { UserName = user.Name, UserChats = chats };
     }
 }

@@ -50,8 +50,8 @@ public class UsersController : ControllerBase
 
     [HttpGet("{userId:int}")]
     [Authorize]
-    public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request) => 
-        _mediator.Send(request);
+    public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request)
+        => _mediator.Send(request);
 
     [HttpGet("current")]
     public Task<GetCurrentUserResponse> GetCurrentUser()
@@ -60,5 +60,13 @@ public class UsersController : ControllerBase
         return _mediator.Send(a is null
             ? new GetCurrentUserRequest { User = new NullUser() }
             : new GetCurrentUserRequest { User = User });
+    }
+
+    [HttpPost("current")]
+    [Authorize]
+    public async Task<LogOutUserResponse> LogOutUser(LogOutUserRequest request)
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return await _mediator.Send(request);
     }
 }

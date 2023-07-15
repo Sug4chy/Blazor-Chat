@@ -43,9 +43,9 @@ else
 
     private async Task LoadData()
     {
-        var response = await ChatsControllerClient.GetAllUsersInChat(new GetAllUsersInChatRequest { ChatId = ChatId });
+        var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
         _chat = response.Chat;
-        _users = response.UsersInChat;
+        _users = _chat.Users;
     }
 
     private async Task AddUserInChat()

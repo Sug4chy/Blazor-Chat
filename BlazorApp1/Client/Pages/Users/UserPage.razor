@@ -35,12 +35,12 @@ else
     [Parameter]
     public int UserId { get; set; }
 
-    protected override Task OnInitializedAsync() => LoadData();
+    protected override async Task OnInitializedAsync() => await LoadData();
 
     private async Task LoadData()
     {
         var response = await UsersControllerClient.GetUserChats(new GetUserChatsRequest { UserId = UserId });
         _userName = response.UserName;
-        _chats = response.Chats.Length == 0 ? Array.Empty<ChatModel>() : response.Chats;
+        _chats = response.UserChats.Length == 0 ? Array.Empty<ChatModel>() : response.UserChats;
     }
 }

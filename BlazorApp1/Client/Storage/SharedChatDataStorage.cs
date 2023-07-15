@@ -1,26 +1,29 @@
 ﻿using System.Collections.Concurrent;
-using System.Net.Http.Json;
 using BlazorApp1.Shared.Models;
+using BlazorApp1.Shared.Requests.Chats;
+using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Chats;
-using BlazorApp1.Shared.Responses.Users;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace BlazorApp1.Client.Storage;
 
 public class SharedChatDataStorage
 {
-    private readonly HttpClient _httpClient;
+    private readonly IUsersControllerClient _usersControllerClient;
+    private readonly IChatsControllerClient _chatsControllerClient;
     private readonly ChatHubClient _chatHubClient;
     private readonly IDictionary<int, UserModel> _users = new ConcurrentDictionary<int, UserModel>();
-    private readonly IDictionary<int, StoredChatData> _chats = new ConcurrentDictionary<int, StoredChatData>();
+    private readonly IDictionary<int, ChatModel> _chats = new ConcurrentDictionary<int, ChatModel>();
     private readonly IDictionary<int, MessageModel> _messages = new ConcurrentDictionary<int, MessageModel>();
     private bool _allUsersLoaded;
     private int? _currentUserId;
 
-    public SharedChatDataStorage(HttpClient httpClient, ChatHubClient chatHubClient)
+    public SharedChatDataStorage(ChatHubClient chatHubClient, 
+        IChatsControllerClient chatsControllerClient, 
+        IUsersControllerClient usersControllerClient)
     {
-        _httpClient = httpClient;
         _chatHubClient = chatHubClient;
+        _chatsControllerClient = chatsControllerClient;
+        _usersControllerClient = usersControllerClient;
         _chatHubClient.OnMessageSent += AddMessage;
     }
 
@@ -36,9 +39,10 @@ public class SharedChatDataStorage
 
     private async Task FetchCurrentUserAsync()
     {
-        var response = await SafeGetHttp<GetCurrentUserResponse>("Users/current");
+        var response = await _usersControllerClient.GetCurrentUser();
         if (response.CurrentUser is null)
         {
+            _currentUserId = null;
             return;
         }
 
@@ -56,8 +60,7 @@ public class SharedChatDataStorage
             return _users.Values.ToArray();
         }
 
-        var response = await SafeGetHttp<GetAllUsersResponse>("api/Users");
-        ArgumentNullException.ThrowIfNull(response);
+        var response = await _usersControllerClient.GetAllUsers(new GetAllUsersRequest());
         var users = response.AllUsers;
         foreach (var user in users)
         {
@@ -67,19 +70,19 @@ public class SharedChatDataStorage
         _allUsersLoaded = true;
         return _users.Values.ToArray();
     }
-
+    
     public async Task<IReadOnlyCollection<ChatModel>> GetChatsAsync()
     {
         if (_chats.Any())
         {
-            return _chats.Values.Select(c => c.Chat).ToArray();
+            return _chats.Values.ToArray();
         }
 
-        var response = await SafeGetHttp<GetAllChatsResponse>("api/Chats");
+        var response = await _chatsControllerClient.GetAllChats(new GetAllChatsRequest());
         var chats = response.AllChats;
         foreach (var chat in chats)
         {
-            _chats.TryAdd(chat.Id, new StoredChatData { Chat = chat, IsPreviewLoaded = true });
+            _chats.TryAdd(chat.Id, chat);
             foreach (var msg in chat.Messages)
             {
                 _messages[msg.Id] = msg;
@@ -88,43 +91,6 @@ public class SharedChatDataStorage
 
         return chats;
     }
-    
-    public async Task<ChatModel> GetChatAsync(int id)
-    {
-        if (_chats.TryGetValue(id, out var data) && data.IsPreviewLoaded is false)
-        {
-            return data.Chat;
-        }
-
-        var result = await _httpClient.GetFromJsonAsync<GetChatResponse>($"Chats/{id}");
-        var chat = result!.Chat;
-        
-        _chats[id] = new StoredChatData { Chat = chat, IsPreviewLoaded = false };
-        
-        foreach (var msg in chat.Messages)
-        {
-            _messages[msg.Id] = msg;
-        }
-        
-        return chat;
-    }
 
     private void AddMessage(SendMessageResponse response) => _messages.Add(response.Message.Id, response.Message);
-
-    private async Task<TResult> SafeGetHttp<TResult>(string uri)
-    {
-        try
-        {
-            var result = await _httpClient.GetFromJsonAsync<TResult>(uri);
-            ArgumentNullException.ThrowIfNull(result);
-            return result;
-        }
-        catch (AccessTokenNotAvailableException e)
-        {
-            e.Redirect();
-            
-            await Task.Delay(-1);
-            return default!;
-        }
-    }
 }
