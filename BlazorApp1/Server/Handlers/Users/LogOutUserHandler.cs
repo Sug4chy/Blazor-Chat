@@ -1,5 +1,4 @@
-﻿using BlazorApp1.Server.Services.Interfaces;
-using BlazorApp1.Shared.Requests.Users;
+﻿using BlazorApp1.Shared.Requests.Users;
 using BlazorApp1.Shared.Responses.Users;
 using MediatR;
 

@@ -1,5 +1,4 @@
 ﻿@page "/chats"
-@inject IChatsControllerClient ChatsControllerClient
 @inject NavigationManager NavigationManager
 <h2> Создайте новый чат! </h2>
 <div>
@@ -16,9 +15,9 @@
     {
         if (_chatName is not null)
         {
-            var response = await ChatsControllerClient.CreateChat(new CreateChatRequest { Name = _chatName });
+            var chat = await Storage.CreateChatAsync(_chatName);
             _chatName = null;
-            NavigationManager.NavigateTo($"chats/{response.Chat.Id}");
+            NavigationManager.NavigateTo($"chats/{chat.Id}");
         }
     }
 }

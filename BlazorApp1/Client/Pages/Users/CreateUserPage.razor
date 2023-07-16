@@ -1,5 +1,5 @@
 ﻿@page "/users"
-@inject IUsersControllerClient UsersControllerClient
+@layout UnauthorizedLayout
 @inject NavigationManager NavigationManager
 <h2>Create new user</h2>
 <div>
@@ -19,7 +19,7 @@
     {
         if (_userName is not null && _password is not null)
         {
-            await UsersControllerClient.CreateUser(new CreateUserRequest { Name = _userName, Password = _password});
+            await Storage.CreateUserAsync(_userName, _password);
             _userName = null;
             _password = null;
             NavigationManager.NavigateTo("users/current");

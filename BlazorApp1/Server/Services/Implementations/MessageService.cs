@@ -18,9 +18,7 @@ public class MessageService : IMessageService
         var message = new Message
         {
             Text = text,
-            Chat = chat,
             ChatId = chat.Id,
-            Sender = sender,
             SenderId = sender.Id,
             SendTime = DateTimeOffset.Now
         };

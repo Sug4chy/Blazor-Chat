@@ -33,7 +33,7 @@ public class UsersController : ControllerBase
     {
         var response = await _mediator.Send(request);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.User!);
-        return new AuthorizeUserResponse { User = null };
+        return response with { User = null };
     }
 
     [HttpDelete]

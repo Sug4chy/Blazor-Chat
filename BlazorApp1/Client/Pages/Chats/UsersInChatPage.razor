@@ -1,5 +1,4 @@
 ﻿@page "/chats/{ChatId:int}/users"
-@inject IChatsControllerClient ChatsControllerClient
 @if (_chat is null)
 {
     <Loading/>
@@ -43,8 +42,8 @@ else
 
     private async Task LoadData()
     {
-        var response = await ChatsControllerClient.GetChat(new GetChatRequest { ChatId = ChatId });
-        _chat = response.Chat;
+        var chat = await Storage.GetChatAsync(ChatId);
+        _chat = chat;
         _users = _chat.Users;
     }
 
@@ -55,7 +54,7 @@ else
             return;
         }
         var userId = int.Parse(_newUserId!);
-        await ChatsControllerClient.AddUserInChat(new AddUserInChatRequest { ChatId = ChatId, UserId = userId });
+        await Storage.AddUserInChatAsync(ChatId, userId);
         await LoadData();
         _newUserId = null;
     }

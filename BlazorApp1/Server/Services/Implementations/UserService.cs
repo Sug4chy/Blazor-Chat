@@ -1,4 +1,5 @@
-﻿using BlazorApp1.Server.Data;
+﻿using System.Diagnostics.CodeAnalysis;
+using BlazorApp1.Server.Data;
 using BlazorApp1.Server.Data.Entities;
 using BlazorApp1.Server.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ public class UserService : IUserService
         return await users.ToArrayAsync();
     }
 
+    [SuppressMessage("ReSharper.DPA", "DPA0006: Large number of DB commands")]
     public async Task<User?> GetUser(int id)
     {
         var users = await _userDb.GetTableAsync();

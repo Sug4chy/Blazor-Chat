@@ -1,5 +1,5 @@
 ﻿@page "/users/auth"
-@inject IUsersControllerClient UsersControllerClient
+@layout UnauthorizedLayout
 <h2> Log in </h2>
 <div>
     <p>
@@ -19,7 +19,7 @@
     {
         if (_userName is not null && _password is not null)
         {
-            await UsersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = _userName, Password = _password });
+            await Storage.AuthorizeUserAsync(_userName, _password);
             _userName = null;
             _password = null;
             NavigationManager.NavigateTo("/");

@@ -13,8 +13,8 @@ public class SharedChatDataStorage
     private readonly ChatHubClient _chatHubClient;
     private readonly IDictionary<int, UserModel> _users = new ConcurrentDictionary<int, UserModel>();
     private readonly IDictionary<int, ChatModel> _chats = new ConcurrentDictionary<int, ChatModel>();
-    private readonly IDictionary<int, MessageModel> _messages = new ConcurrentDictionary<int, MessageModel>();
-    private bool _allUsersLoaded;
+    private readonly IDictionary<int, IDictionary<int, MessageModel>> _messages =
+        new ConcurrentDictionary<int, IDictionary<int, MessageModel>>();
     private int? _currentUserId;
 
     public SharedChatDataStorage(ChatHubClient chatHubClient, 
@@ -48,7 +48,14 @@ public class SharedChatDataStorage
         }
 
         _currentUserId = response.CurrentUser?.Id;
-        _users[_currentUserId!.Value] = response.CurrentUser!;
+        if (_users.TryGetValue(_currentUserId!.Value, out _))
+        {
+            _users[_currentUserId!.Value] = response.CurrentUser!;
+        }
+        else
+        {
+            _users.Add(_currentUserId!.Value, response.CurrentUser!);
+        }
         CurrentUserUpdated?.Invoke(response.CurrentUser!);
     }
 
@@ -59,46 +66,52 @@ public class SharedChatDataStorage
         CurrentUserUpdated?.Invoke(null!);
     }
 
-    public event Action<UserModel>? CurrentUserUpdated;
-
-    public async Task<IReadOnlyCollection<UserModel>> GetUsersAsync()
+    public async Task CreateUserAsync(string name, string password)
     {
-        if (_allUsersLoaded)
-        {
-            return _users.Values.ToArray();
-        }
+        await _usersControllerClient.CreateUser(new CreateUserRequest { Name = name, Password = password });
+    }
 
-        var response = await _usersControllerClient.GetAllUsers(new GetAllUsersRequest());
-        var users = response.AllUsers;
-        foreach (var user in users)
-        {
-            _users[user.Id] = user;
-        }
+    public async Task AuthorizeUserAsync(string name, string password)
+    {
+        var response = await _usersControllerClient.AuthorizeUser(new AuthorizeUserRequest { UserName = name, Password = password });
+        _currentUserId = response.AuthorizedUser.Id;
+    }
 
-        _allUsersLoaded = true;
-        return _users.Values.ToArray();
+    public async Task<(IReadOnlyCollection<ChatModel>, string?)> GetUserChatsAsync(int userId)
+    {
+        var response = await _usersControllerClient.GetUserChats(new GetUserChatsRequest { UserId = userId });
+        return (response.UserChats, response.UserName);
     }
     
-    public async Task<IReadOnlyCollection<ChatModel>> GetChatsAsync()
+    public event Action<UserModel>? CurrentUserUpdated;
+
+    public async Task<ChatModel> GetChatAsync(int chatId)
     {
-        if (_chats.Any())
+        if (_chats.TryGetValue(chatId, out var result))
         {
-            return _chats.Values.ToArray();
+            return result;
         }
 
-        var response = await _chatsControllerClient.GetAllChats(new GetAllChatsRequest());
-        var chats = response.AllChats;
-        foreach (var chat in chats)
-        {
-            _chats.TryAdd(chat.Id, chat);
-            foreach (var msg in chat.Messages)
-            {
-                _messages[msg.Id] = msg;
-            }
-        }
-
-        return chats;
+        var response = await _chatsControllerClient.GetChat(new GetChatRequest { ChatId = chatId });
+        var chat = response.Chat;
+        _messages.Add(chat.Id, chat.Messages.ToDictionary(msg => msg.Id, msg => msg));
+        _chats.Add(chat.Id, chat);
+        return chat;
+    }
+    
+    public async Task<ChatModel> CreateChatAsync(string chatName)
+    {
+        var response = await _chatsControllerClient.CreateChat(new CreateChatRequest { Name = chatName });
+        _chats.Add(response.Chat.Id, response.Chat);
+        return response.Chat;
     }
 
-    private void AddMessage(SendMessageResponse response) => _messages.Add(response.Message.Id, response.Message);
+    public async Task AddUserInChatAsync(int chatId, int userId)
+    {
+        var response = await _chatsControllerClient.AddUserInChat(new AddUserInChatRequest
+            { ChatId = chatId, UserId = userId });
+        _chats[chatId] = response.UpdatedChat;
+    } 
+    
+    private void AddMessage(SendMessageResponse response) => _messages[response.Message.ChatId].Add(response.Message.Id, response.Message);
 }

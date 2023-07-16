@@ -34,7 +34,6 @@ public class ChatService : IChatService
         var chats = await _chatDb.GetTableAsync();
         var chat = await chats
             .Include(chat => chat.Messages)
-            .Include(chat => chat.Users)
             .FirstOrDefaultAsync(chat => chat.Id == chatId);
         return chat;
     }

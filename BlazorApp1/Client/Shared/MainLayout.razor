@@ -19,13 +19,3 @@
         </article>
     </main>
 </div>
-
-@code {
-
-    protected override Task OnInitializedAsync()
-    {
-        Storage.CurrentUserUpdated += _ => StateHasChanged();
-        return base.OnInitializedAsync();
-    }
-
-}
