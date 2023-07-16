@@ -67,6 +67,6 @@ public class UsersController : ControllerBase
     public async Task<LogOutUserResponse> LogOutUser(LogOutUserRequest request)
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return await _mediator.Send(request);
+        return await _mediator.Send(new LogOutUserRequest { User = User });
     }
 }

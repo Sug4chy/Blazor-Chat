@@ -25,9 +25,8 @@ else
         Storage.CurrentUserUpdated += _ =>
         {
             _user = null;
-            StateHasChanged();
         };
-        _ = await UsersControllerClient.LogOutUser(new LogOutUserRequest { UserId = _user!.Id });
+        await Storage.LogOutUserAsync();
         NavigationManager.NavigateTo("/");
     }
 }

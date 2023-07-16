@@ -43,12 +43,20 @@ public class SharedChatDataStorage
         if (response.CurrentUser is null)
         {
             _currentUserId = null;
+            CurrentUserUpdated?.Invoke(null!);
             return;
         }
 
         _currentUserId = response.CurrentUser?.Id;
         _users[_currentUserId!.Value] = response.CurrentUser!;
         CurrentUserUpdated?.Invoke(response.CurrentUser!);
+    }
+
+    public async Task LogOutUserAsync()
+    {
+        await _usersControllerClient.LogOutUser(new LogOutUserRequest());
+        _currentUserId = null;
+        CurrentUserUpdated?.Invoke(null!);
     }
 
     public event Action<UserModel>? CurrentUserUpdated;
