@@ -8,10 +8,7 @@ public interface IUsersControllerClient
 {
     [Post("/users")]
     Task<CreateUserResponse> CreateUser(CreateUserRequest request);
-
-    [Get("/users")]
-    Task<GetAllUsersResponse> GetAllUsers(GetAllUsersRequest request);
-
+    
     [Get("/Users/{request.UserId}")]
     Task<GetUserChatsResponse> GetUserChats(GetUserChatsRequest request);
 

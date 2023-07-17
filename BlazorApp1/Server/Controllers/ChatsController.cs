@@ -22,11 +22,7 @@ public class ChatsController : ControllerBase
     [Authorize]
     public Task<CreateChatResponse> CreateChat([FromBody] CreateChatRequest request) =>
         _mediator.Send(request with { User = User });
-
-    [HttpGet]
-    [Authorize]
-    public Task<GetAllChatsResponse> GetAllChats([FromQuery] GetAllChatsRequest request) => _mediator.Send(request);
-
+    
     [HttpDelete]
     [Authorize]
     public Task<DeleteChatResponse> DeleteChat([FromQuery] DeleteChatRequest request) => _mediator.Send(request);

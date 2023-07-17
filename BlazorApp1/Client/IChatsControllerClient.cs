@@ -11,10 +11,7 @@ public interface IChatsControllerClient
     
     [Post("/chats")]
     Task<CreateChatResponse> CreateChat(CreateChatRequest request);
-
-    [Get("/chats")]
-    Task<GetAllChatsResponse> GetAllChats(GetAllChatsRequest request);
-
+    
     [Delete("/chats")]
     Task<DeleteChatResponse> DeleteChat(DeleteChatRequest request);
 

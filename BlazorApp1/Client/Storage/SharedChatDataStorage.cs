@@ -29,11 +29,7 @@ public class SharedChatDataStorage
 
     public async Task<UserModel?> GetCurrentUserAsync()
     {
-        if (_currentUserId is null)
-        {
-            await FetchCurrentUserAsync();
-        }
-        
+        await FetchCurrentUserAsync();
         return _currentUserId is not null ? _users[_currentUserId.Value] : null;
     }
 
@@ -48,13 +44,13 @@ public class SharedChatDataStorage
         }
 
         _currentUserId = response.CurrentUser?.Id;
-        if (_users.TryGetValue(_currentUserId!.Value, out _))
+        if (!_users.TryGetValue(_currentUserId!.Value, out _))
         {
-            _users[_currentUserId!.Value] = response.CurrentUser!;
+            _users.Add(_currentUserId!.Value, response.CurrentUser!);
         }
         else
         {
-            _users.Add(_currentUserId!.Value, response.CurrentUser!);
+            _users[_currentUserId!.Value] = response.CurrentUser!;
         }
         CurrentUserUpdated?.Invoke(response.CurrentUser!);
     }
@@ -111,7 +107,13 @@ public class SharedChatDataStorage
         var response = await _chatsControllerClient.AddUserInChat(new AddUserInChatRequest
             { ChatId = chatId, UserId = userId });
         _chats[chatId] = response.UpdatedChat;
-    } 
+    }
+
+    public async Task<ChatModel> GetUsersInChatAsync(int chatId)
+    {
+        var response = await _chatsControllerClient.GetAllUsersInChat(new GetAllUsersInChatRequest { ChatId = chatId });
+        return response.Chat with { Users = response.UsersInChat };
+    }
     
     private void AddMessage(SendMessageResponse response) => _messages[response.Message.ChatId].Add(response.Message.Id, response.Message);
 }

@@ -45,9 +45,6 @@ public class UsersController : ControllerBase
         return response;
     }
 
-    [HttpGet]
-    public Task<GetAllUsersResponse> GetAllUsers([FromQuery] GetAllUsersRequest request) => _mediator.Send(request);
-
     [HttpGet("{userId:int}")]
     [Authorize]
     public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request)

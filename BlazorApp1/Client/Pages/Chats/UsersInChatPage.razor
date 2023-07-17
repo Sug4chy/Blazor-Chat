@@ -42,7 +42,7 @@ else
 
     private async Task LoadData()
     {
-        var chat = await Storage.GetChatAsync(ChatId);
+        var chat = await Storage.GetUsersInChatAsync(ChatId);
         _chat = chat;
         _users = _chat.Users;
     }

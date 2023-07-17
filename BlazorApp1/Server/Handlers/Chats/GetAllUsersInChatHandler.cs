@@ -24,8 +24,7 @@ public class GetAllUsersInChatHandler : IRequestHandler<GetAllUsersInChatRequest
         var chat = await _chatService.GetChat(request.ChatId);
         NotFoundException.ThrowIfNull(chat);
 
-        var users = chat.Users.Select(_mapper.Map<UserModel>)
-            .ToArray();
-        return new GetAllUsersInChatResponse { Chat = _mapper.Map<ChatModel>(chat), UsersInChat = users };
+        var userModels = chat.Users.Select(_mapper.Map<UserModel>).ToArray();
+        return new GetAllUsersInChatResponse { Chat = _mapper.Map<ChatModel>(chat), UsersInChat = userModels };
     }
 }
