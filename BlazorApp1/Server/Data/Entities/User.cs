@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp1.Server.Data.Entities;
 
-public record User
+public class User
 {
     public int Id { get; set; }
     public required string Name { get; set; }

@@ -26,10 +26,10 @@ public class CreateChatHandler : IRequestHandler<CreateChatRequest, CreateChatRe
     {
         var userId = int.Parse(request.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var user = await _userService.GetUser(userId);
-        NotFoundException.ThrowIfNull(user);
+        NotAllowedException.ThrowIfNull(user);
 
-        var entity = await _chatService.CreateChat(request.Name, user);
-        var model = _mapper.Map<ChatModel>(entity);
-        return new CreateChatResponse { Chat = model };
+        var chat = await _chatService.CreateChat(request.Name, user);
+        var chatModel = _mapper.Map<ChatModel>(chat);
+        return new CreateChatResponse { Chat = chatModel };
     }
 }

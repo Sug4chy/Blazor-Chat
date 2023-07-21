@@ -29,8 +29,8 @@ public class ContextRepository<T> : IRepository<T> where T : class
         await _db.SaveChangesAsync();
     }
 
-    public async Task<DbSet<T>> GetTableAsync()
+    public Task<DbSet<T>> GetTableAsync()
     {
-        return _db.Set<T>();
+        return Task.FromResult(_db.Set<T>());
     }
 }
