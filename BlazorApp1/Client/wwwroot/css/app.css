@@ -99,3 +99,55 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.custom-button {
+    top: 50%;
+    background-color: #871cff;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 2px 2px rgb(0,0,0);
+}
+.custom-button:hover {
+    background: #9e62ff;
+    transition: 0.3s;
+}
+
+.custom-button:focus {
+    outline-color: transparent;
+    outline-style: solid;
+    box-shadow: 0 0 0 4px #5a01a7;
+    transition: 0.3s;
+}
+
+.custom-button:active {
+    background-color: #be86ff;
+}
+
+.parent {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    background-color: gray;
+}
+
+.block {
+    width: 260px;
+    height: 250px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -125px 0 0 -125px;
+    box-shadow: 0 0 2px 2px rgb(0,0,0);
+    border-radius: 10px;
+    background-color: white;
+}
+
+.another-block {
+    width: auto;
+    height: auto;
+    position: absolute;
+    margin-left: 10px;
+}

@@ -1,15 +1,19 @@
 ﻿@page "/users/auth"
 @layout UnauthorizedLayout
-<h2> Log in </h2>
-<div>
-    <p>
+<div class="parent">
+    <div class="block">
+        <div class="another-block">
+        <h2> Log in </h2>
+        <p>
             Name: <br/>
             <InputText @bind-Value="_userName"/> <br/>
             Password: <br/>
             <InputText type="password" @bind-Value="_password"/>
-    </p>
-    <button @onclick="LogIn"> Log in </button> <br/>
-    <a href="users"> Зарегистрироваться </a>
+        </p>
+        <button @onclick="LogIn" class="custom-button"> Log in </button> <br/>
+            <a href="users"> Зарегистрироваться </a>
+            </div>
+    </div>
 </div>
 @code {
     private string? _userName;
