@@ -145,6 +145,18 @@ a, .btn-link {
     background-color: white;
 }
 
+.sign-in-block {
+    width: 260px;
+    height: 280px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -125px 0 0 -125px;
+    box-shadow: 0 0 2px 2px rgb(0,0,0);
+    border-radius: 10px;
+    background-color: white;
+}
+
 .another-block {
     width: auto;
     height: auto;

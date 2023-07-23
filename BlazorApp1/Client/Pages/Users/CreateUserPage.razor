@@ -1,28 +1,46 @@
 ﻿@page "/users"
 @layout UnauthorizedLayout
 @inject NavigationManager NavigationManager
-<h2>Create new user</h2>
-<div>
-    <p>
-        Name: <br/>
-        <InputText @bind-Value="_userName"/> <br/>
-        Password: <br/>
-        <InputText type="password" @bind-Value="_password"/>
-    </p>
-    <button @onclick="CreateUser" class="custom-button"> Create </button>
+<div class="parent">
+    <div class="sign-in-block">
+        <div class="another-block">
+            <h2> Регистрация </h2>
+            <p>
+                Имя: <br/>
+                <InputText @bind-Value="_userName"/> <br/>
+                Пароль: <br/>
+                <InputText type="password" @bind-Value="_password"/> <br/>
+                Подтвердите пароль: <br/>
+                <InputText type="password" @bind-Value="_passwordChecking"/>
+            </p>
+            <button @onclick="CreateUser" class="custom-button"> Зарегистрироваться </button> <br/>
+            <a href="users/auth"> Уже есть аккаунт </a>
+        </div>
+    </div>
 </div>
 @code {
     private string? _userName;
     private string? _password;
+    private string? _passwordChecking;
 
     private async Task CreateUser()
     {
-        if (_userName is not null && _password is not null)
+        if (ArePasswordsEqual())
         {
-            await Storage.CreateUserAsync(_userName, _password);
+            await Storage.CreateUserAsync(_userName!, _password!);
             _userName = null;
             _password = null;
             NavigationManager.NavigateTo("users/current");
         }
+        else
+        {
+            _password = null;
+            _passwordChecking = null;
+        }
+    }
+
+    private bool ArePasswordsEqual()
+    {
+        return _password!.Equals(_passwordChecking) && _passwordChecking is not null && _password is not null;
     }
 }

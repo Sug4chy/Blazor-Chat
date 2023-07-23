@@ -3,16 +3,16 @@
 <div class="parent">
     <div class="block">
         <div class="another-block">
-        <h2> Log in </h2>
-        <p>
-            Name: <br/>
-            <InputText @bind-Value="_userName"/> <br/>
-            Password: <br/>
-            <InputText type="password" @bind-Value="_password"/>
-        </p>
-        <button @onclick="LogIn" class="custom-button"> Log in </button> <br/>
+            <h2> Вход в аккаунт </h2>
+            <p>
+                Имя: <br/>
+                <InputText @bind-Value="_userName"/> <br/>
+                Пароль: <br/>
+                <InputText type="password" @bind-Value="_password"/>
+            </p>
+            <button @onclick="LogIn" class="custom-button"> Войти </button> <br/>
             <a href="users"> Зарегистрироваться </a>
-            </div>
+        </div>
     </div>
 </div>
 @code {
