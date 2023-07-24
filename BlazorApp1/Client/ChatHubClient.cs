@@ -9,7 +9,7 @@ namespace BlazorApp1.Client;
 public class ChatHubClient : HubClientBase
 {
     public event Action<SendMessageResponse> OnMessageSent = null!;
-    
+
     public ChatHubClient(NavigationManager navigationManager) 
         : base(navigationManager)
     {

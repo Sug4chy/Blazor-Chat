@@ -3,6 +3,7 @@ using BlazorApp1.Server.Exceptions;
 using BlazorApp1.Server.Services.Interfaces;
 using BlazorApp1.Shared.HubContracts;
 using BlazorApp1.Shared.Requests.Chats;
+using BlazorApp1.Shared.Responses.Chats;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -21,7 +22,7 @@ public class ChatHub : Hub<IChatHubClient>, IChatHub
         _userService = userService;
     }
 
-    public Task SendMessage(SendMessageRequest request)
+    public Task<SendMessageResponse> SendMessage(SendMessageRequest request)
     {
         var userId = int.Parse(Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         return _mediator.Send(request with { UserId = userId });

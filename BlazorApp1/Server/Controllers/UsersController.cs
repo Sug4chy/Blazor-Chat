@@ -35,16 +35,7 @@ public class UsersController : ControllerBase
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, response.User!);
         return response with { User = null };
     }
-
-    [HttpDelete]
-    [Authorize]
-    public async Task<DeleteUserResponse> DeleteUser([FromQuery] DeleteUserRequest request)
-    {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var response = await _mediator.Send(request with { User = User });
-        return response;
-    }
-
+    
     [HttpGet("{userId:int}")]
     [Authorize]
     public Task<GetUserChatsResponse> GetUserChats([FromRoute, FromBody] GetUserChatsRequest request)

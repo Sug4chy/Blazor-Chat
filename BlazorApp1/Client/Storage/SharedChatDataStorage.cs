@@ -15,6 +15,7 @@ public class SharedChatDataStorage
     private readonly IDictionary<int, ChatModel> _chats = new ConcurrentDictionary<int, ChatModel>();
     private readonly IDictionary<int, IDictionary<int, MessageModel>> _messages =
         new ConcurrentDictionary<int, IDictionary<int, MessageModel>>();
+
     private int? _currentUserId;
 
     public SharedChatDataStorage(ChatHubClient chatHubClient, 
@@ -114,6 +115,7 @@ public class SharedChatDataStorage
         var response = await _chatsControllerClient.GetAllUsersInChat(new GetAllUsersInChatRequest { ChatId = chatId });
         return response.Chat with { Users = response.UsersInChat };
     }
-    
-    private void AddMessage(SendMessageResponse response) => _messages[response.Message.ChatId].Add(response.Message.Id, response.Message);
+
+    private void AddMessage(SendMessageResponse response) =>
+        _messages[response.Message.ChatId].Add(response.Message.Id, response.Message);
 }

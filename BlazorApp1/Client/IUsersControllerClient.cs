@@ -12,9 +12,6 @@ public interface IUsersControllerClient
     [Get("/Users/{request.UserId}")]
     Task<GetUserChatsResponse> GetUserChats(GetUserChatsRequest request);
 
-    [Delete("/users")]
-    Task<DeleteUserResponse> DeleteUser(DeleteUserRequest request);
-
     [Post("/users/auth")]
     Task<AuthorizeUserResponse> AuthorizeUser(AuthorizeUserRequest request);
 
